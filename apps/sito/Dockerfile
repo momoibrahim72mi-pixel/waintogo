@@ -7,7 +7,7 @@ WORKDIR /repo
 COPY . .
 RUN pnpm install --frozen-lockfile --filter @waintogo/sito...
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN pnpm --filter @waintogo/sito build
+RUN pnpm --filter "@waintogo/sito..." build
 
 FROM node:22-alpine
 WORKDIR /app

@@ -1,0 +1,82 @@
+/* Stile del gestionale: semplice, leggibile, utilizzabile anche da telefono. */
+:root {
+  --sfondo: #f6f7f9;
+  --carta: #ffffff;
+  --testo: #1b1f24;
+  --tenue: #5b6470;
+  --bordo: #dde1e6;
+  --primario: #0f5e5a;
+  --primario-scuro: #0a4441;
+  --errore: #b42318;
+  --ok: #067647;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--testo);
+  background: var(--sfondo);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { color: var(--primario); }
+
+.intestazione { background: var(--carta); border-bottom: 1px solid var(--bordo); padding: 0.9rem 1.5rem; }
+.marchio { font-weight: 700; font-size: 1.15rem; text-decoration: none; color: var(--testo); }
+.marchio span { font-weight: 400; color: var(--tenue); }
+.contenuto { max-width: 1000px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+
+.titolo-pagina { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+h1 { font-size: 1.6rem; margin: 0.5rem 0 1rem; }
+h2 { font-size: 1.1rem; margin: 0 0 1rem; }
+.briciole { margin: 0; color: var(--tenue); font-size: 0.9rem; }
+.sotto { color: var(--tenue); font-size: 0.9rem; }
+.vuoto { color: var(--tenue); }
+
+.pulsante {
+  display: inline-block; padding: 0.6rem 1rem; min-height: 44px;
+  border: 1px solid var(--bordo); border-radius: 8px; background: var(--carta);
+  color: var(--testo); font: inherit; text-decoration: none; cursor: pointer;
+}
+.pulsante:hover { border-color: var(--tenue); }
+.pulsante:disabled { opacity: 0.5; cursor: not-allowed; }
+.pulsante.primario { background: var(--primario); border-color: var(--primario); color: #fff; }
+.pulsante.primario:hover { background: var(--primario-scuro); }
+.pulsante.pericolo { color: var(--errore); }
+.pulsante.leggero { border-color: transparent; color: var(--tenue); }
+
+.tabella-contenitore { overflow-x: auto; background: var(--carta); border: 1px solid var(--bordo); border-radius: 10px; }
+.tabella { width: 100%; border-collapse: collapse; }
+.tabella th, .tabella td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--bordo); white-space: nowrap; }
+.tabella th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--tenue); }
+.tabella tr:last-child td { border-bottom: none; }
+.tabella .numero { text-align: right; font-variant-numeric: tabular-nums; }
+
+.stato { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; }
+.stato-bozza { background: #eef0f3; color: #3d4652; }
+.stato-pubblicato { background: #dcf3e8; color: #05603a; }
+.stato-chiuso { background: #fde7d9; color: #93370d; }
+
+.riquadro { background: var(--carta); border: 1px solid var(--bordo); border-radius: 10px; padding: 1.25rem; margin-bottom: 1rem; }
+.griglia { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.campo { display: flex; flex-direction: column; gap: 0.3rem; }
+.campo.largo { grid-column: 1 / -1; }
+.etichetta { font-size: 0.85rem; font-weight: 600; }
+.aiuto { font-size: 0.8rem; color: var(--tenue); }
+.campo input, .campo textarea {
+  font: inherit; padding: 0.55rem 0.7rem; border: 1px solid var(--bordo); border-radius: 8px; width: 100%;
+}
+.campo input:focus, .campo textarea:focus { outline: 2px solid var(--primario); outline-offset: 1px; }
+.con-errore input, .con-errore textarea { border-color: var(--errore); }
+.messaggio-errore { color: var(--errore); font-size: 0.85rem; }
+
+.tappa { display: grid; grid-template-columns: 90px minmax(0, 1fr) auto; gap: 1rem; align-items: start; padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 1px dashed var(--bordo); }
+.tappa-testi { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.azioni { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.avviso { padding: 0.8rem 1rem; border-radius: 8px; margin-bottom: 1rem; }
+.avviso.ok { background: #dcf3e8; color: var(--ok); }
+.avviso.errore { background: #fdecea; color: var(--errore); }
+.avviso ul { margin: 0.4rem 0 0; padding-left: 1.2rem; }
+
+@media (max-width: 640px) {
+  .griglia { grid-template-columns: minmax(0, 1fr); }
+  .tappa { grid-template-columns: minmax(0, 1fr); }
+}

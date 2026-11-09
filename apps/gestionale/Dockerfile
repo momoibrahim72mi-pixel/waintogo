@@ -7,7 +7,7 @@ RUN corepack enable
 WORKDIR /repo
 COPY . .
 RUN pnpm install --frozen-lockfile --filter @waintogo/gestionale...
-RUN pnpm --filter @waintogo/gestionale build
+RUN pnpm --filter "@waintogo/gestionale..." build
 
 # Versione di nginx che non gira come root (ascolta sulla porta 8080).
 FROM nginxinc/nginx-unprivileged:1.29-alpine

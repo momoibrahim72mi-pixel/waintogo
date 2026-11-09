@@ -13,7 +13,9 @@ apps/
   sito/         Sito pubblico (Next.js). Pagine generate sul server, buone per Google.
   gestionale/   App per gli organizzatori (React + Vite). Diventa file statici serviti da nginx.
   api/          Backend (Fastify). Parla con il database PostgreSQL.
-packages/       Codice condiviso tra le app (arriva nella tappa 2: schema del database e tipi).
+packages/
+  shared/       Regole di validità e tipi condivisi da API e gestionale.
+  db/           Tabelle del database e migrazioni.
 docker-compose.yml   Avvia tutto in locale, database compreso.
 ```
 
@@ -45,7 +47,7 @@ docker compose up --build
 ```
 
 - Sito pubblico: http://localhost:3000
-- Gestionale: http://localhost:8080 (mostra "Stato API: ok" se l'API risponde)
+- Gestionale: http://localhost:8080 (crea e pubblica i viaggi)
 - API: http://localhost:3001/health
 
 ### Senza Docker (per sviluppare, con ricarica automatica)
@@ -64,6 +66,7 @@ pnpm dev
 | `pnpm dev`       | Avvia tutte le app in modalità sviluppo |
 | `pnpm build`     | Compila tutte le app                    |
 | `pnpm typecheck` | Controlla gli errori di TypeScript      |
+| `pnpm test`      | Esegue i test (serve Postgres acceso)   |
 
 ## Documentazione
 

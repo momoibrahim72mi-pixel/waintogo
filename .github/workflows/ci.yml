@@ -1,4 +1,4 @@
-# CI: a ogni push e pull request controlla che tutto compili.
+# CI: a ogni push e pull request controlla che tutto compili e che i test passino.
 # Più avanti aggiungeremo la costruzione delle immagini ARM64 e l'invio al registry di OCI.
 name: CI
 
@@ -10,6 +10,19 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Un Postgres vero, acceso solo per la durata della CI: i test dell'API lo usano.
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: waintogo
+          POSTGRES_PASSWORD: cambiami
+          POSTGRES_DB: waintogo
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U waintogo"
+          --health-interval 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -20,3 +33,4 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
       - run: pnpm build
+      - run: pnpm test
