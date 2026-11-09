@@ -4,3 +4,5 @@ dist/
 .turbo/
 .env
 *.log
+*.tsbuildinfo
+next-env.d.ts
