@@ -7,9 +7,10 @@ FROM node:22-alpine AS build
 RUN corepack enable
 WORKDIR /repo
 COPY . .
-# Installa solo le dipendenze dell'API (e dei pacchetti interni che usa), poi compila.
+# Installa solo le dipendenze dell'API, poi compila lei e i pacchetti interni che usa
+# (i "..." dopo il nome significano "e tutto ciò da cui dipende").
 RUN pnpm install --frozen-lockfile --filter @waintogo/api...
-RUN pnpm --filter @waintogo/api build
+RUN pnpm --filter "@waintogo/api..." build
 # "deploy" copia l'API in /out con le sole dipendenze di produzione.
 RUN pnpm --filter @waintogo/api deploy --legacy --prod /out
 

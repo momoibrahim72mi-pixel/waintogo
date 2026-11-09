@@ -56,3 +56,35 @@ Se una decisione cambia, non si cancella: si aggiunge una nuova voce che la sost
 
 **Scelta:** pagamenti con bonifico o Revolut. Chi si iscrive riceve i dati per email, l'organizzatore registra a mano i pagamenti ricevuti nel gestionale, e lo stato (da pagare, acconto, saldato) viene calcolato.
 **Perché:** si parte senza costi né burocrazia. I pagamenti online si potranno aggiungere più avanti senza cambiare il modello dati.
+
+### D9 – Regole di validità scritte una volta sola, con Zod
+*2026-11-09 · tappa 2*
+
+**Scelta:** le regole di un viaggio valido stanno in `packages/shared`, scritte con Zod. Le usano sia l'API sia il gestionale.
+**Perché:** il gestionale mostra gli errori subito, accanto al campo, senza aspettare il server. L'API rifiuta comunque i dati sbagliati, anche se arrivano da altrove: non ci si fida mai di quello che arriva dal browser. Le regole sono identiche nei due posti perché sono lo stesso codice. Zod genera anche i tipi TypeScript, quindi non vanno riscritti.
+
+### D10 – Le migrazioni si applicano all'avvio dell'API
+*2026-11-09 · tappa 2*
+
+**Scelta:** quando parte, l'API applica le migrazioni mancanti (`applicaMigrazioni` in `packages/db`).
+**Perché:** è il modo più semplice con una sola copia dell'API: non serve un passo separato e il database è sempre allineato al codice.
+**Quando cambiarla:** se un giorno gireranno più copie dell'API, partirebbero tutte insieme provando a migrare. A quel punto si sposta il passo in un Job di Kubernetes che gira prima del deploy.
+
+### D11 – Lo slug di un viaggio non cambia
+*2026-11-09 · tappa 2*
+
+**Scelta:** l'indirizzo del viaggio (`/viaggi/islanda-agosto-2027`) si genera alla creazione e resta fisso anche se si cambia il titolo.
+**Perché:** i link condivisi su WhatsApp o sui social continuano a funzionare, e Google non perde la pagina.
+
+### D12 – API con "sostituisci tutto" (PUT) per i viaggi
+*2026-11-09 · tappa 2*
+
+**Scelta:** per modificare un viaggio, il gestionale manda il viaggio intero, itinerario compreso (`PUT /viaggi/:id`), e l'API lo sostituisce in una transazione.
+**Perché:** il modulo ha già tutti i dati, quindi è più semplice e senza casi strani di "modifiche parziali".
+**Scartata:** `PATCH` con i soli campi cambiati, più efficiente ma con più logica da scrivere e da testare. Nella spiegazione della tappa avevo indicato PATCH: ho cambiato idea scrivendo il codice per questo motivo.
+
+### D13 – Navigazione del gestionale con React Router
+*2026-11-09 · tappa 2*
+
+**Scelta:** React Router in modalità semplice (`<BrowserRouter>` + `<Routes>`), con dati caricati dentro le pagine.
+**Perché:** è lo standard per le app React, e ogni pagina ha il suo indirizzo, quindi si può aggiornare o condividere. nginx rimanda ogni indirizzo a `index.html` (vedi `nginx.conf`) e poi è React Router a scegliere la pagina.
