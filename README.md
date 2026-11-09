@@ -64,3 +64,7 @@ pnpm dev
 | `pnpm dev`       | Avvia tutte le app in modalità sviluppo |
 | `pnpm build`     | Compila tutte le app                    |
 | `pnpm typecheck` | Controlla gli errori di TypeScript      |
+
+## Documentazione
+
+Tutta la documentazione, in italiano, è nella cartella [`docs/`](docs/README.md): architettura, decisioni tecniche, sviluppo, modello dati, roadmap e procedure.
