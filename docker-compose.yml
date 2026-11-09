@@ -1,0 +1,40 @@
+# Avvia tutto in locale con:  docker compose up --build
+#   sito pubblico → http://localhost:3000
+#   gestionale    → http://localhost:8080
+#   API           → http://localhost:3001/health
+# Prima copia .env.example in .env.
+
+services:
+  db:
+    image: postgres:17-alpine
+    env_file: .env
+    ports: ["5432:5432"]
+    volumes: [dbdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U waintogo"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: { context: ., dockerfile: apps/api/Dockerfile }
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    ports: ["3001:3001"]
+    depends_on:
+      db: { condition: service_healthy }
+
+  sito:
+    build: { context: ., dockerfile: apps/sito/Dockerfile }
+    environment:
+      API_URL: http://api:3001
+    ports: ["3000:3000"]
+    depends_on: [api]
+
+  gestionale:
+    build: { context: ., dockerfile: apps/gestionale/Dockerfile }
+    ports: ["8080:8080"]
+    depends_on: [api]
+
+volumes:
+  dbdata:
