@@ -2,6 +2,13 @@
 
 Sito per viaggi di gruppo e gestionale per gli organizzatori.
 
+- **Sito pubblico**: catalogo dei viaggi con filtri, pagina di ogni viaggio con itinerario e date, richiesta di iscrizione con codice di prenotazione e istruzioni per bonifico o Revolut.
+- **Gestionale**: cruscotto con le cose da fare, viaggi e partenze, iscritti, pagamenti registrati a mano, esportazione CSV.
+
+L'idea completa, con quello che verrà dopo, è in [docs/concept.md](docs/concept.md).
+
+> ⚠️ Il gestionale non ha ancora il login: non va messo online finché non c'è.
+
 ## Com'è fatto il progetto
 
 È un **monorepo**: un solo repository che contiene più applicazioni.
@@ -14,7 +21,7 @@ apps/
   gestionale/   App per gli organizzatori (React + Vite). Diventa file statici serviti da nginx.
   api/          Backend (Fastify). Parla con il database PostgreSQL.
 packages/
-  shared/       Regole di validità e tipi condivisi da API e gestionale.
+  shared/       Regole di validità e tipi condivisi da API, sito e gestionale.
   db/           Tabelle del database e migrazioni.
 docker-compose.yml   Avvia tutto in locale, database compreso.
 ```
@@ -25,14 +32,14 @@ quindi girano sui nodi Ampere di Oracle Cloud.
 
 ### Quanta memoria usano
 
-Misurato in locale, a riposo:
+Misurato in locale, a riposo, con i dati di esempio (concept v1):
 
 | Container   | RAM     |
 |-------------|---------|
-| gestionale  | ~5 MB   |
-| api         | ~20 MB  |
-| sito        | ~35 MB  |
-| postgres    | ~30 MB  |
+| gestionale  | ~6 MB   |
+| api         | ~75 MB  |
+| sito        | ~55 MB  |
+| postgres    | ~40 MB  |
 
 Il gestionale è separato dal sito proprio per questo: una volta compilato è
 solo HTML e JavaScript, e nginx lo serve con pochissima memoria.
@@ -47,7 +54,7 @@ docker compose up --build
 ```
 
 - Sito pubblico: http://localhost:3000
-- Gestionale: http://localhost:8080 (crea e pubblica i viaggi)
+- Gestionale: http://localhost:8080
 - API: http://localhost:3001/health
 
 ### Senza Docker (per sviluppare, con ricarica automatica)
@@ -67,6 +74,7 @@ pnpm dev
 | `pnpm build`     | Compila tutte le app                    |
 | `pnpm typecheck` | Controlla gli errori di TypeScript      |
 | `pnpm test`      | Esegue i test (serve Postgres acceso)   |
+| `pnpm --filter @waintogo/api esempi` | Crea viaggi di esempio (solo se il database è vuoto) |
 
 ## Documentazione
 

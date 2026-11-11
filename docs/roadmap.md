@@ -4,10 +4,12 @@
 |---|---|---|
 | 1 | Scheletro del monorepo, Docker, avvio in locale, CI | ✅ PR #1 |
 | 2 | Database (Drizzle) e API dei viaggi, gestionale per creare e pubblicare viaggi | ✅ PR #2 |
-| 3 | Sito pubblico: elenco viaggi e pagina del viaggio | ⏳ prossima |
-| 4 | Registrazione, login e iscrizione a un viaggio | |
-| 5 | Email di conferma con i dati per bonifico/Revolut, registrazione manuale dei pagamenti nel gestionale | |
-| 6 | Conti nel gestionale: incassi, spese e margine per viaggio | |
+| 3 | **Concept v1**: partenze, sito pubblico con catalogo e richiesta di iscrizione, gestionale con cruscotto, iscritti e pagamenti manuali | ✅ PR #3 |
+| 4 | Login e ruoli nel gestionale (indispensabile prima di metterlo online) | ⏳ prossima |
+| 5 | Email automatiche: conferma della richiesta con i dati per bonifico/Revolut, conferma pagamento, promemoria del saldo | |
+| 6 | Conti nel gestionale: spese e margine per partenza | |
+
+La lista completa delle idee per il gestionale, in ordine di utilità, è in [concept.md](concept.md).
 
 Dopo l'MVP: immagini su Object Storage, costruzione delle immagini ARM64 in CI e invio al registry OCI, eventuali pagamenti online.
 
@@ -28,5 +30,16 @@ Dopo l'MVP: immagini su Object Storage, costruzione delle immagini ARM64 in CI e
 - **Gestionale**: elenco dei viaggi, modulo con itinerario, pulsanti Pubblica, Riporta in bozza ed Elimina. Il pulsante Pubblica dice cosa manca.
 - **Test**: 6 sulle regole condivise e 9 sulle API, su un Postgres vero (`waintogo_test`). La CI ora accende un Postgres e li esegue a ogni PR.
 - **Verifica**: flusso completo nel browser (crea, errori, completa, pubblica) e nei container, con le migrazioni applicate all'avvio.
+
+## Tappa 3 (concept v1) – cosa è stato fatto
+
+Il concept completo è in [concept.md](concept.md). In pratica:
+
+- **Modello dati**: il viaggio è la scheda del catalogo; date, prezzi e posti stanno nelle **partenze** (un viaggio può partire più volte). Nuove tabelle `partenze`, `iscrizioni`, `pagamenti`. La migrazione `0001` sposta i viaggi esistenti nelle partenze senza perdere dati.
+- **Sito pubblico** (Next.js): home, catalogo con filtri (stile, mese, durata, prezzo), pagina del viaggio (in breve, itinerario, incluso/non incluso, partenze con etichette "garantita", "ultimi posti", "completo"), richiesta di iscrizione con codice di prenotazione e istruzioni di pagamento, pagina "Come funziona" con le domande frequenti.
+- **API**: rotte pubbliche `/pubblico/*` per il sito, rotte per partenze, iscrizioni, pagamenti e cruscotto. L'ultimo posto non può essere preso da due persone insieme (blocco `FOR UPDATE`, vedi D16).
+- **Gestionale**: cruscotto con le cose da fare, viaggi con tutti i campi nuovi, partenze dentro ogni viaggio, pagina degli iscritti con pagamenti, iscrizione a mano ed esportazione CSV.
+- **Dati di esempio**: `pnpm --filter @waintogo/api esempi` crea 4 viaggi e qualche iscritto (vedi [sviluppo.md](sviluppo.md)).
+- **Test**: 11 sulle regole condivise, 22 sulle API (compreso il test dell'ultimo posto conteso). Prova completa nel browser di sito e gestionale, da computer e da telefono.
 
 > ⚠️ Il gestionale **non ha ancora il login** (arriva nella tappa 4): non va messo online prima di allora.

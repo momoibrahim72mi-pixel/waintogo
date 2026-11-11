@@ -28,8 +28,8 @@ docker compose up --build
 
 | Indirizzo | Cosa trovi |
 |---|---|
-| http://localhost:3000 | Sito pubblico |
-| http://localhost:8080 | Gestionale (elenco viaggi, crea e pubblica) |
+| http://localhost:3000 | Sito pubblico (home, catalogo, pagina del viaggio, iscrizione) |
+| http://localhost:8080 | Gestionale (cruscotto, viaggi, partenze, iscritti e pagamenti) |
 | http://localhost:3001/health | API |
 
 Si ferma tutto con `Ctrl+C`, oppure con `docker compose down`.
@@ -43,8 +43,28 @@ docker compose up db -d   # solo il database, in background
 pnpm dev                  # sito, gestionale e API con ricarica automatica
 ```
 
-Quando salvi un file, l'app si aggiorna da sola. Il gestionale in sviluppo è su http://localhost:5173.
+Quando salvi un file, l'app si aggiorna da sola. Il sito è su http://localhost:3000, il gestionale in sviluppo su http://localhost:5173.
 Al primo avvio l'API crea da sola le tabelle (applica le migrazioni).
+
+## Dati di esempio
+
+Con il database vuoto sito e gestionale non mostrano niente. Per riempirlo:
+
+```bash
+pnpm --filter @waintogo/api esempi
+```
+
+Crea 4 viaggi pubblicati (Islanda, Marocco, Giappone, Algarve) con le loro partenze, e 11 iscritti sulla prima partenza del Marocco, con pagamenti in stati diversi. Se nel database ci sono già dei viaggi non fa niente, quindi non può rovinare dati veri. Con docker compose lo stesso comando si lancia dentro il container dell'API:
+
+```bash
+docker compose exec api node dist/esempi.js
+```
+
+## Cosa provare
+
+1. Sul **sito** apri un viaggio, scegli una partenza e premi "Chiedi il posto". Alla fine ricevi un codice come `WTG-7KQ3PA` e le istruzioni di pagamento.
+2. Nel **gestionale**, sul cruscotto, la persona appare in "Richieste da confermare". Cliccala, apri "Pagamenti" e registra l'acconto: l'iscrizione diventa confermata da sola.
+3. Riempi una partenza: chi chiede dopo finisce in lista d'attesa, e sul sito la partenza appare "Completa".
 
 ## Test
 
@@ -65,6 +85,7 @@ I test dell'API usano un database **separato**, `waintogo_test`, creato in autom
 | `pnpm --filter @waintogo/api dev` | Avvia una sola app (qui l'API) |
 | `pnpm test` | Esegue tutti i test |
 | `pnpm --filter @waintogo/db genera-migrazione --name <nome>` | Crea una migrazione dopo aver cambiato lo schema (vedi [modello-dati.md](modello-dati.md)) |
+| `pnpm --filter @waintogo/api esempi` | Riempie il database di sviluppo con viaggi di esempio, se è vuoto |
 | `docker build -f apps/api/Dockerfile .` | Costruisce l'immagine di una app (dalla radice del repo) |
 
 ## Struttura dei file
@@ -72,11 +93,11 @@ I test dell'API usano un database **separato**, `waintogo_test`, creato in autom
 ```
 waintogo/
 ├── apps/
-│   ├── api/            src/server.ts avvia, src/viaggi/ contiene rotte e accesso ai dati, test/ i test
-│   ├── sito/           app/ contiene le pagine (ogni cartella = un indirizzo)
-│   └── gestionale/     src/pagine/ le pagine, src/api.ts le chiamate all'API, nginx.conf il server
+│   ├── api/            src/server.ts avvia; src/viaggi, partenze, iscrizioni, pubblico, cruscotto: rotte e accesso ai dati; test/ i test
+│   ├── sito/           app/ le pagine (ogni cartella = un indirizzo), components/ i pezzi riusati, lib/ chiamate all'API e formati
+│   └── gestionale/     src/pagine/ le pagine, src/componenti/ i pezzi riusati, src/api.ts le chiamate all'API, nginx.conf il server
 ├── packages/
-│   ├── shared/         regole di validità e tipi, usati da API e gestionale
+│   ├── shared/         regole di validità e tipi, usati da API, sito e gestionale
 │   └── db/             schema delle tabelle (src/schema.ts) e migrazioni (drizzle/)
 ├── docs/               questa documentazione
 ├── .github/workflows/  la CI di GitHub Actions
@@ -93,3 +114,5 @@ waintogo/
 - **Il gestionale dice "Non riesco a contattare l'API"**: l'API non è partita. Guarda i log con `docker compose logs api`.
 - **I test dell'API falliscono con `ECONNREFUSED`**: Postgres non è acceso. Avvialo con `docker compose up db -d`.
 - **`Cannot find module '@waintogo/shared'`**: i pacchetti condivisi non sono compilati. Lancia `pnpm build` una volta (con `pnpm dev` e `pnpm test` succede da solo).
+- **Il sito dice "Non riesco a caricare i viaggi"**: l'API non risponde all'indirizzo `API_URL` (in sviluppo `http://localhost:3001`). Controlla che sia accesa.
+- **Il sito è vuoto**: non ci sono viaggi pubblicati. Pubblicane uno dal gestionale o lancia i dati di esempio.

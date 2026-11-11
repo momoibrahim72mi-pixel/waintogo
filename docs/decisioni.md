@@ -88,3 +88,57 @@ Se una decisione cambia, non si cancella: si aggiunge una nuova voce che la sost
 
 **Scelta:** React Router in modalità semplice (`<BrowserRouter>` + `<Routes>`), con dati caricati dentro le pagine.
 **Perché:** è lo standard per le app React, e ogni pagina ha il suo indirizzo, quindi si può aggiornare o condividere. nginx rimanda ogni indirizzo a `index.html` (vedi `nginx.conf`) e poi è React Router a scegliere la pagina.
+
+### D14 – Il viaggio è la scheda, le date sono "partenze"
+*2026-11-11 · concept v1*
+
+**Scelta:** un viaggio (titolo, itinerario, incluso...) può avere più **partenze**, ognuna con data, prezzo, acconto, posti, minimo di partecipanti e coordinatore. Sostituisce l'idea della tappa 2, dove date e prezzo stavano nel viaggio.
+**Perché:** è come funzionano WeRoad e Sivola. Lo stesso viaggio parte più volte all'anno, magari con prezzi diversi in alta stagione, e così non si copia la scheda per ogni data. Anche lo slug ora non contiene più il mese (`/viaggi/islanda-on-the-road`), perché il viaggio non ha più una data sua.
+**Scartata:** tenere un viaggio per ogni data. È più semplice all'inizio, ma con 10 date si avrebbero 10 schede da tenere allineate a mano.
+
+### D15 – Il posto è tenuto dal momento della richiesta
+*2026-11-11 · concept v1*
+
+**Scelta:** quando qualcuno chiede di iscriversi, l'iscrizione nasce come `richiesta` e **occupa già un posto**. Se la partenza è piena, nasce in `lista_attesa`.
+**Perché:** chi riceve le istruzioni di pagamento deve essere sicuro che il posto ci sia quando fa il bonifico. Se una richiesta non viene pagata, l'organizzatore la annulla e il posto si libera (il cruscotto le mostra in "Richieste da confermare").
+**Scartata:** occupare il posto solo al pagamento. Si rischierebbe che due persone paghino per l'ultimo posto.
+
+### D16 – L'ultimo posto: blocco della riga della partenza
+*2026-11-11 · concept v1*
+
+**Scelta:** per creare un'iscrizione (o riattivarne una) l'API apre una transazione e legge la partenza con `SELECT ... FOR UPDATE`, poi conta i posti e inserisce.
+**Perché:** se due persone premono "Invia" nello stesso istante per l'ultimo posto, senza blocco entrambe vedrebbero "1 posto libero" ed entrambe entrerebbero. `FOR UPDATE` fa aspettare la seconda finché la prima non ha finito: la seconda vede 0 posti e va in lista d'attesa. C'è un test apposta in `apps/api/test/prenotazioni.test.ts`.
+**Scartata:** salvare un contatore di posti nella partenza. Andrebbe tenuto allineato a ogni cambio di stato, ed è facile che sbagli; contare le iscrizioni è sempre giusto.
+
+### D17 – Chi si iscrive non crea un account
+*2026-11-11 · concept v1*
+
+**Scelta:** per iscriversi basta un modulo (nome, cognome, email, telefono, consenso privacy). La persona riceve un **codice di prenotazione** (`WTG-7KQ3PA`) da usare come causale del bonifico. Il login ci sarà solo per gli organizzatori (tappa 4).
+**Perché:** per un viaggio di gruppo, chiedere un account prima della prenotazione fa perdere persone, e un account serve a poco se si viaggia una o due volte all'anno. Con meno dati personali salvati c'è anche meno da proteggere (GDPR).
+**Più avanti:** un'area personale con un link via email ("magic link"), senza password, se servirà.
+
+### D18 – Il primo pagamento conferma l'iscrizione
+*2026-11-11 · concept v1*
+
+**Scelta:** quando l'organizzatore registra il primo pagamento di una `richiesta`, questa diventa `confermata` da sola. Lo stato del pagamento (da pagare, acconto versato, saldato) non è salvato ma calcolato dalla somma dei pagamenti.
+**Perché:** "ha pagato l'acconto" è proprio ciò che vuol dire "confermato": un clic in meno e nessun rischio di dimenticarlo. Lo stato del pagamento calcolato non può essere in disaccordo con i pagamenti.
+**Nota:** si può comunque confermare a mano senza pagamento (per esempio un amico che paga in contanti alla partenza).
+
+### D19 – Il sito parla con l'API solo dal server
+*2026-11-11 · concept v1*
+
+**Scelta:** le pagine del sito chiamano le rotte `/pubblico/*` dell'API **dal server Next.js** (Server Components per leggere, una Server Action per la richiesta di iscrizione). Il browser di chi visita non chiama mai l'API direttamente.
+**Perché:** l'API non deve essere raggiungibile da Internet attraverso il sito, e le pagine arrivano già complete (buone per Google). Le rotte `/pubblico/*` restituiscono solo i dati che si possono mostrare: niente iscritti, niente viaggi in bozza, niente partenze passate o annullate. Il modulo di iscrizione funziona anche con JavaScript disattivato.
+**Scartata:** chiamare l'API dal browser. Servirebbe esporla e gestire il CORS.
+
+### D20 – Dati di esempio con un comando
+*2026-11-11 · concept v1*
+
+**Scelta:** `pnpm --filter @waintogo/api esempi` crea 4 viaggi pubblicati (Islanda, Marocco, Giappone, Algarve) con partenze e alcuni iscritti, ma **solo se il database non ha ancora viaggi**: non cancella e non tocca mai niente di esistente.
+**Perché:** per provare sito e gestionale serve qualcosa da vedere, e così chiunque ha gli stessi dati di partenza. I dati passano dall'API (`app.inject`), quindi rispettano le stesse regole dei dati veri. I testi e l'IBAN sono finti, scritti come "ESEMPIO".
+
+### D21 – Esportazione CSV pensata per Excel in italiano
+*2026-11-11 · concept v1*
+
+**Scelta:** il CSV degli iscritti si crea nel browser, usa il **punto e virgola** come separatore, gli importi con la virgola (`890,00`) e inizia con un carattere invisibile chiamato "BOM".
+**Perché:** l'Excel italiano si aspetta il punto e virgola (la virgola è il separatore dei decimali), e senza BOM mostra male le lettere accentate. Google Fogli e LibreOffice lo leggono comunque.
