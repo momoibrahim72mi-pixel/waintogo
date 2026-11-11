@@ -1,25 +1,29 @@
 // "Archivio" dei viaggi: tutte le letture e scritture sul database passano da qui.
 // Le rotte HTTP (rotte.ts) non scrivono SQL: chiamano queste funzioni.
 // Così, se un giorno cambiamo il modo di salvare i dati, si tocca solo questo file.
-import { type Db, tappeItinerario, viaggi } from "@waintogo/db";
-import type { StatoViaggio, Viaggio, ViaggioInput } from "@waintogo/shared";
+import { type Db, iscrizioni, partenze, tappeItinerario, viaggi } from "@waintogo/db";
+import type { StatoViaggio, Stile, Viaggio, ViaggioInput } from "@waintogo/shared";
 import { asc, desc, eq, like, or } from "drizzle-orm";
+import { calcolaPartenza } from "../partenze/calcoli.js";
 
-/** Elenco dei viaggi, dal più recente (per data di partenza). */
+// Cosa caricare insieme a un viaggio: tappe in ordine e partenze con lo stato delle iscrizioni.
+const conDettagli = () => ({
+  tappe: { orderBy: [asc(tappeItinerario.giorno)] },
+  partenze: {
+    orderBy: [asc(partenze.dataInizio)],
+    with: { iscrizioni: { columns: { stato: true as const } } },
+  },
+});
+
+/** Elenco dei viaggi, dall'ultimo modificato. */
 export async function elencoViaggi(db: Db): Promise<Viaggio[]> {
-  const righe = await db.query.viaggi.findMany({
-    orderBy: [desc(viaggi.dataInizio)],
-    with: { tappe: { orderBy: [asc(tappeItinerario.giorno)] } },
-  });
+  const righe = await db.query.viaggi.findMany({ orderBy: [desc(viaggi.aggiornatoIl)], with: conDettagli() });
   return righe.map(inViaggio);
 }
 
-/** Un viaggio con le sue tappe, oppure null se non esiste. */
+/** Un viaggio con tappe e partenze, oppure null se non esiste. */
 export async function trovaViaggio(db: Db, id: string): Promise<Viaggio | null> {
-  const riga = await db.query.viaggi.findFirst({
-    where: eq(viaggi.id, id),
-    with: { tappe: { orderBy: [asc(tappeItinerario.giorno)] } },
-  });
+  const riga = await db.query.viaggi.findFirst({ where: eq(viaggi.id, id), with: conDettagli() });
   return riga ? inViaggio(riga) : null;
 }
 
@@ -27,7 +31,7 @@ export async function trovaViaggio(db: Db, id: string): Promise<Viaggio | null> 
 export async function creaViaggio(db: Db, dati: ViaggioInput): Promise<string> {
   // Una "transazione": o va tutto a buon fine (viaggio + tappe), o non si salva niente.
   return db.transaction(async (tx) => {
-    const slug = await slugLibero(tx, creaSlug(dati.titolo, dati.dataInizio));
+    const slug = await slugLibero(tx, creaSlug(dati.titolo));
     const { tappe, ...campi } = dati;
     const [nuovo] = await tx.insert(viaggi).values({ ...campi, slug }).returning({ id: viaggi.id });
     await salvaTappe(tx, nuovo!.id, tappe);
@@ -57,7 +61,7 @@ export async function eliminaViaggio(db: Db, id: string): Promise<void> {
 
 // ---------------------------------------------------------------------------
 
-type Transazione = Parameters<Parameters<Db["transaction"]>[0]>[0];
+export type Transazione = Parameters<Parameters<Db["transaction"]>[0]>[0];
 
 async function salvaTappe(tx: Transazione, viaggioId: string, tappe: ViaggioInput["tappe"]) {
   if (tappe.length === 0) return;
@@ -65,20 +69,18 @@ async function salvaTappe(tx: Transazione, viaggioId: string, tappe: ViaggioInpu
 }
 
 /**
- * "Islanda: fuoco & ghiaccio" + "2027-08-01" → "islanda-fuoco-ghiaccio-agosto-2027".
+ * "Islanda: fuoco & ghiaccio" → "islanda-fuoco-ghiaccio".
  * Toglie accenti e simboli, così l'indirizzo è leggibile e sicuro.
+ * (Le date non ci sono più: lo stesso viaggio ha tante partenze.)
  */
-export function creaSlug(titolo: string, dataInizio: string): string {
-  const mesi = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"];
-  const [anno, mese] = dataInizio.split("-");
-  const base = titolo
+export function creaSlug(titolo: string): string {
+  return titolo
     .normalize("NFD") // separa le lettere dagli accenti: "è" → "e" + "`"
     .replace(/[̀-ͯ]/g, "") // ...e toglie gli accenti
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
-    .slice(0, 60);
-  return `${base}-${mesi[Number(mese) - 1]}-${anno}`;
+    .slice(0, 70);
 }
 
 /** Se lo slug è già usato aggiunge -2, -3, ... finché non ne trova uno libero. */
@@ -94,15 +96,20 @@ async function slugLibero(tx: Transazione, slug: string): Promise<string> {
   return `${slug}-${n}`;
 }
 
-type RigaConTappe = typeof viaggi.$inferSelect & { tappe: (typeof tappeItinerario.$inferSelect)[] };
+type RigaConDettagli = typeof viaggi.$inferSelect & {
+  tappe: (typeof tappeItinerario.$inferSelect)[];
+  partenze: (typeof partenze.$inferSelect & { iscrizioni: Pick<typeof iscrizioni.$inferSelect, "stato">[] })[];
+};
 
 /** Trasforma una riga del database nel formato che l'API restituisce. */
-function inViaggio({ tappe, creatoIl, aggiornatoIl, ...v }: RigaConTappe): Viaggio {
+export function inViaggio({ tappe, partenze: righePartenze, creatoIl, aggiornatoIl, ...v }: RigaConDettagli): Viaggio {
   return {
     ...v,
+    stili: v.stili as Stile[],
     // Le date con l'ora viaggiano in formato ISO: "2026-11-09T16:25:15.988Z".
     creatoIl: creatoIl.toISOString(),
     aggiornatoIl: aggiornatoIl.toISOString(),
     tappe: tappe.map((t) => ({ giorno: t.giorno, titolo: t.titolo, descrizione: t.descrizione })),
+    partenze: righePartenze.map(({ iscrizioni, ...p }) => calcolaPartenza(p, v.durataGiorni, iscrizioni)),
   };
 }

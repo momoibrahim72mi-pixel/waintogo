@@ -8,6 +8,13 @@
       "when": 1794241151394,
       "tag": "0000_viaggi",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794426710968,
+      "tag": "0001_catalogo-partenze-iscrizioni",
+      "breakpoints": true
     }
   ]
 }
