@@ -2,8 +2,27 @@
 <html lang="it">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Waintogo – Gestionale</title>
+    <link rel="icon" href="/icone/icona-192.png" />
+    <script>
+      // Solo per la webapp del telefono (/webapp): collega il "manifest" che la rende installabile
+      // e imposta il colore della barra di sistema. Spiegazione in src/webapp/installazione.ts.
+      if (location.pathname === "/webapp" || location.pathname.startsWith("/webapp/")) {
+        document.title = "Waintogo";
+        for (const [tag, attributi] of [
+          ["link", { rel: "manifest", href: "/webapp.webmanifest" }],
+          ["link", { rel: "apple-touch-icon", href: "/icone/apple-touch-icon.png" }],
+          ["meta", { name: "theme-color", content: "#0f5e5a" }],
+          ["meta", { name: "apple-mobile-web-app-capable", content: "yes" }],
+          ["meta", { name: "apple-mobile-web-app-title", content: "Waintogo" }],
+        ]) {
+          const el = document.createElement(tag);
+          for (const [k, v] of Object.entries(attributi)) el.setAttribute(k, v);
+          document.head.appendChild(el);
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

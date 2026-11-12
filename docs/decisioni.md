@@ -142,3 +142,21 @@ Se una decisione cambia, non si cancella: si aggiunge una nuova voce che la sost
 
 **Scelta:** il CSV degli iscritti si crea nel browser, usa il **punto e virgola** come separatore, gli importi con la virgola (`890,00`) e inizia con un carattere invisibile chiamato "BOM".
 **Perché:** l'Excel italiano si aspetta il punto e virgola (la virgola è il separatore dei decimali), e senza BOM mostra male le lettere accentate. Google Fogli e LibreOffice lo leggono comunque.
+
+### D22 – La webapp per telefono è nella stessa app del gestionale, sotto /webapp
+*2026-11-12 · richiesta di Mohamed*
+
+**Scelta:** il gestionale ha due interfacce nella stessa app React: la versione completa per computer (`/`) e una webapp per telefono (`/webapp`), con pagine pensate per il pollice (barra in basso, schede, pulsanti grandi, contatti a un tocco).
+**Perché:** Mohamed vuole una versione da usare come app sul telefono, raggiungibile aggiungendo `/webapp` all'indirizzo del gestionale. Tenerla nella stessa app vuol dire un solo container (pochi MB in più, costo zero), un solo login quando arriverà, e codice condiviso (chiamate all'API, regole, stati).
+**Scartate:**
+- *Una sola interfaccia "responsive"* che si adatta allo schermo: le tabelle del gestionale su un telefono restano scomode, e chi è in giro ha bisogno di altre cose (chiamare, registrare un bonifico) rispetto a chi è alla scrivania.
+- *Un'app nativa* (Android/iOS): servirebbero gli store, un altro linguaggio o React Native, e la pubblicazione su App Store costa 99 $ all'anno.
+- *Una terza app separata*: un container in più da costruire e pubblicare, per lo stesso risultato.
+
+### D23 – PWA: il service worker salva i file, mai i dati
+*2026-11-12*
+
+**Scelta:** la webapp è installabile (manifest e icone) e ha un service worker che tiene in memoria **solo** i file dell'app (HTML, JS, CSS, icone). Le chiamate a `/api` vanno sempre al server.
+**Perché:** l'app si apre subito e, senza rete, mostra "Non riesco a contattare il server" invece di una pagina bianca. Non salvare i dati evita due problemi: vedere iscritti o pagamenti vecchi credendoli aggiornati, e lasciare dati personali degli iscritti sul telefono (GDPR).
+**Come si aggiorna:** a ogni versione nuova i file JS/CSS hanno nomi nuovi; la pagina si scarica sempre prima dalla rete. Se un giorno si cambia il modo di salvare, basta cambiare il nome `waintogo-webapp-v1` in `webapp-sw.js` e le vecchie copie vengono cancellate.
+**In sviluppo** (`pnpm dev`) il service worker non si attiva, per non lavorare su file vecchi.

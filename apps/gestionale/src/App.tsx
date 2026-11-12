@@ -1,18 +1,36 @@
-// Struttura del gestionale: intestazione con il menu e, sotto, la pagina giusta per l'indirizzo.
+// Struttura del gestionale. Ci sono due interfacce sullo stesso indirizzo, con gli stessi dati:
+//
+// VERSIONE COMPLETA, per computer e portatile (intestazione con il menu in alto):
 //   /                  cruscotto (prossime partenze e cose da fare)
 //   /viaggi            elenco dei viaggi
 //   /viaggi/nuovo      modulo per un viaggio nuovo
 //   /viaggi/:id        modulo per modificare un viaggio, con le sue partenze
 //   /partenze/:id      iscritti e pagamenti di una partenza
+//
+// WEBAPP, per il telefono (barra in basso, installabile sulla schermata home):
+//   /webapp/...        vedi webapp/WebApp.tsx
 import { BrowserRouter, Link, NavLink, Route, Routes } from "react-router";
 import { Cruscotto } from "./pagine/Cruscotto";
 import { ElencoViaggi } from "./pagine/ElencoViaggi";
 import { ModuloViaggio } from "./pagine/ModuloViaggio";
 import { PaginaPartenza } from "./pagine/PaginaPartenza";
+import { WebApp } from "./webapp/WebApp";
 
 export function App() {
   return (
     <BrowserRouter>
+      <Routes>
+        {/* "/*" vuol dire "questo indirizzo e tutto quello che c'è sotto". */}
+        <Route path="/webapp/*" element={<WebApp />} />
+        <Route path="/*" element={<VersioneCompleta />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+function VersioneCompleta() {
+  return (
+    <>
       <header className="intestazione">
         <Link to="/" className="marchio">
           Waintogo <span>gestionale</span>
@@ -23,6 +41,9 @@ export function App() {
           </NavLink>
           <NavLink to="/viaggi">Viaggi</NavLink>
         </nav>
+        <Link to="/webapp" className="link-webapp">
+          📱 App per telefono
+        </Link>
       </header>
       <main className="contenuto">
         <Routes>
@@ -34,6 +55,6 @@ export function App() {
           <Route path="*" element={<p>Pagina non trovata.</p>} />
         </Routes>
       </main>
-    </BrowserRouter>
+    </>
   );
 }

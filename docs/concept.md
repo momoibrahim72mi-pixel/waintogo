@@ -73,6 +73,20 @@ Abbiamo guardato due siti italiani che fanno questo mestiere. Ne prendiamo le id
    - **aggiungere un iscritto a mano**, per chi prenota al telefono o su WhatsApp;
    - **esportare la lista** in CSV, per hotel, assicurazione e coordinatore.
 
+### Due interfacce: computer e telefono
+
+Il gestionale ha due interfacce sullo stesso indirizzo, con gli stessi dati:
+
+| | Versione completa | Webapp per telefono |
+|---|---|---|
+| Indirizzo | `/` | `/webapp` |
+| Per chi | chi lavora alla scrivania | chi è in giro, o il coordinatore durante il viaggio |
+| Cosa fa | tutto: viaggi, partenze, iscritti, pagamenti, CSV | **Oggi** (le cose da fare), **Partenze**, iscritti di una partenza con i pulsanti per **chiamare, scrivere su WhatsApp o per email** e **registrare un pagamento** in due tocchi |
+| Com'è fatta | menu in alto, tabelle | barra in basso a portata di pollice, schede, pulsanti grandi |
+| Installabile | no | sì: si aggiunge alla schermata home e si apre a tutto schermo come un'app |
+
+Sul telefono mancano apposta le cose lunghe o delicate (creare viaggi, correggere o eliminare pagamenti): si fanno dalla versione completa, dove si sbaglia meno. Dalla barra in basso, "Completa" porta alla versione completa; dalla versione completa, "App per telefono" porta alla webapp.
+
 ### Cosa verrà dopo (in ordine di utilità)
 
 | Funzione | Perché serve |

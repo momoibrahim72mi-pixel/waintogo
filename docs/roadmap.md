@@ -5,6 +5,7 @@
 | 1 | Scheletro del monorepo, Docker, avvio in locale, CI | ✅ PR #1 |
 | 2 | Database (Drizzle) e API dei viaggi, gestionale per creare e pubblicare viaggi | ✅ PR #2 |
 | 3 | **Concept v1**: partenze, sito pubblico con catalogo e richiesta di iscrizione, gestionale con cruscotto, iscritti e pagamenti manuali | ✅ PR #3 |
+| 3b | Webapp del gestionale per telefono, sotto `/webapp`, installabile | ✅ PR #4 |
 | 4 | Login e ruoli nel gestionale (indispensabile prima di metterlo online) | ⏳ prossima |
 | 5 | Email automatiche: conferma della richiesta con i dati per bonifico/Revolut, conferma pagamento, promemoria del saldo | |
 | 6 | Conti nel gestionale: spese e margine per partenza | |
@@ -41,5 +42,12 @@ Il concept completo è in [concept.md](concept.md). In pratica:
 - **Gestionale**: cruscotto con le cose da fare, viaggi con tutti i campi nuovi, partenze dentro ogni viaggio, pagina degli iscritti con pagamenti, iscrizione a mano ed esportazione CSV.
 - **Dati di esempio**: `pnpm --filter @waintogo/api esempi` crea 4 viaggi e qualche iscritto (vedi [sviluppo.md](sviluppo.md)).
 - **Test**: 11 sulle regole condivise, 22 sulle API (compreso il test dell'ultimo posto conteso). Prova completa nel browser di sito e gestionale, da computer e da telefono.
+
+## Tappa 3b (webapp per telefono) – cosa è stato fatto
+
+- Il gestionale ha ora due interfacce: la **versione completa** (`/`) e la **webapp per telefono** (`/webapp`). Stesso codice, stessa API, stessi dati (decisione D22).
+- Schermate della webapp: **Oggi** (prossima partenza e cose da fare), **Partenze**, **iscritti di una partenza** con filtri, contatti (chiama, WhatsApp, email), registrazione veloce di un pagamento e cambio di stato.
+- **Installabile** (PWA): manifest, icone e un service worker che salva solo i file dell'app, mai i dati (D23). Controllato con gli strumenti di Chrome: nessun errore di installabilità.
+- Verifica: prova completa con Playwright su un iPhone simulato, anche senza rete, e immagine Docker con nginx.
 
 > ⚠️ Il gestionale **non ha ancora il login** (arriva nella tappa 4): non va messo online prima di allora.
