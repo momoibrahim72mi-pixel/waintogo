@@ -1,13 +1,30 @@
-// Il layout avvolge tutte le pagine del sito: intestazione, contenuto, piè di pagina.
-import type { Metadata } from "next";
+// Il layout avvolge tutte le pagine del sito: intestazione con il menu, contenuto, piè di pagina.
+import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { Contatti } from "../components/Contatti";
+import { Menu, type VoceMenu } from "../components/Menu";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Waintogo · Viaggi di gruppo con coordinatore", template: "%s · Waintogo" },
-  description: "Piccoli gruppi, un coordinatore sempre con voi, persone della tua età. Scegli la partenza e richiedi il tuo posto.",
+  title: { default: "Waintogo · Scopri il nostro prossimo viaggio", template: "%s · Waintogo" },
+  description:
+    "Viaggi di gruppo, weekend, day trip e retreat: piccoli gruppi, persone nuove e un coordinatore sempre con voi. Scopri il nostro prossimo viaggio.",
 };
+
+// Il colore della barra del browser sul telefono, uguale all'intestazione.
+export const viewport: Viewport = { themeColor: "#fbf7f1" };
+
+// Le voci del menu: tutte portano a una sezione della home ("/#..."), così funzionano
+// anche dalla pagina di un viaggio.
+const VOCI: VoceMenu[] = [
+  { href: "/#prossimo-viaggio", testo: "Prossimo viaggio" },
+  { href: "/#cosa-facciamo", testo: "Cosa facciamo" },
+  { href: "/#viaggi-passati", testo: "Viaggi passati" },
+  { href: "/#chi-siamo", testo: "Chi siamo" },
+  { href: "/#faq", testo: "FAQ" },
+  { href: "/#contatti", testo: "Contatti" },
+];
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -18,33 +35,24 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Link href="/" className="logo">
               wain<span>to</span>go
             </Link>
-            <nav aria-label="Menu principale" className="menu">
-              <Link href="/viaggi">Viaggi</Link>
-              <Link href="/come-funziona">Come funziona</Link>
-            </nav>
+            <Menu voci={VOCI} />
           </div>
         </header>
         <main>{children}</main>
         <footer className="piede">
-          <div className="contenitore piede-griglia">
-            <div>
-              <p className="logo">
-                wain<span>to</span>go
-              </p>
-              <p>Viaggi di gruppo con coordinatore. Piccoli gruppi, nuove amicizie, zero pensieri.</p>
-            </div>
-            <div>
-              <p className="piede-titolo">Esplora</p>
-              <Link href="/viaggi">Tutti i viaggi</Link>
-              <Link href="/come-funziona">Come funziona</Link>
-              <Link href="/come-funziona#domande">Domande frequenti</Link>
-            </div>
-            <div>
-              <p className="piede-titolo">Contatti</p>
-              {/* Da sostituire con i contatti veri. */}
-              <p>[EMAIL DI CONTATTO]</p>
-              <p>[NUMERO WHATSAPP]</p>
-            </div>
+          <div className="contenitore">
+            <p className="logo">
+              wain<span>to</span>go
+            </p>
+            <p>Viaggi di gruppo, weekend, day trip e retreat. Un viaggio alla volta, fatto bene.</p>
+            <nav aria-label="Menu del piè di pagina" className="piede-menu">
+              {VOCI.map((v) => (
+                <Link key={v.href} href={v.href}>
+                  {v.testo}
+                </Link>
+              ))}
+            </nav>
+            <Contatti />
           </div>
         </footer>
       </body>

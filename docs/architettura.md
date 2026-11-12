@@ -30,7 +30,7 @@ I nomi di dominio sono esempi: il dominio vero lo sceglie Mohamed.
 
 | Parte | Cartella | Cosa fa | Porta |
 |---|---|---|---|
-| **sito** | `apps/sito` | Il sito pubblico: home, catalogo con filtri, pagina del viaggio, richiesta di iscrizione, come funziona. Le pagine sono generate sul server (SSR), così i motori di ricerca le leggono complete. | 3000 |
+| **sito** | `apps/sito` | Il sito pubblico: una home in una pagina (prossimo viaggio, cosa facciamo, viaggi passati, chi siamo, FAQ, contatti), la pagina del viaggio e la richiesta di iscrizione. Le pagine sono generate sul server (SSR), così i motori di ricerca le leggono complete. | 3000 |
 | **gestionale** | `apps/gestionale` | L'app per gli organizzatori: cruscotto, viaggi e partenze, iscritti, pagamenti. È una "single page app": dopo la compilazione è solo HTML/JS/CSS servito da nginx. | 8080 |
 | **api** | `apps/api` | Il backend. È l'unica parte che parla con il database, e sia il sito sia il gestionale passano da lei. | 3001 |
 | **db** | – | PostgreSQL. In locale gira con docker compose, nel cluster con CloudNativePG. | 5432 |
@@ -50,7 +50,8 @@ Solo l'API importa `@waintogo/db`: gli altri non possono toccare il database nem
 
 | Metodo e indirizzo | Cosa fa |
 |---|---|
-| `GET /pubblico/viaggi` | Catalogo: viaggi pubblicati con le partenze prenotabili e il prezzo "da" |
+| `GET /pubblico/viaggi` | Viaggi pubblicati con le partenze prenotabili e il prezzo "da" (la home ne usa il più vicino come "prossimo viaggio") |
+| `GET /pubblico/viaggi-passati` | Viaggi già fatti, dal più recente: titolo, destinazione, foto, date. Niente prezzi né iscritti |
 | `GET /pubblico/viaggi/:slug` | La scheda completa di un viaggio, con itinerario e partenze |
 | `POST /pubblico/iscrizioni` | Richiesta di iscrizione dal sito; risponde con codice, stato e istruzioni di pagamento |
 

@@ -165,6 +165,21 @@ export default async function PaginaViaggio({ params }: Props) {
           )}
         </aside>
       </div>
+
+      {/* Sul telefono "In breve" finisce in fondo alla pagina: questa barra fissa in basso
+          tiene sempre a portata di pollice il prezzo e il pulsante per prenotare.
+          Sullo schermo largo è nascosta dal CSS (c'è già "In breve" a fianco). */}
+      {prossima && (
+        <div className="barra-prenota">
+          <span>
+            <small>{dataBreve(prossima.dataInizio, true)}</small>
+            {prezzo(prossima.prezzoCentesimi)}
+          </span>
+          <a className="pulsante" href="#partenze">
+            Prenota
+          </a>
+        </div>
+      )}
     </>
   );
 }

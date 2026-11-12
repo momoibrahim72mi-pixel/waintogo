@@ -1,7 +1,11 @@
-// Le domande frequenti, usate nella home (le prime) e nella pagina "Come funziona" (tutte).
+// Le domande frequenti, nella sezione "FAQ" della home.
 // <details> apre e chiude la risposta senza bisogno di JavaScript.
 // Le risposte sono una BOZZA: vanno controllate e adattate alle condizioni vere.
 const DOMANDE = [
+  {
+    d: "Come si prenota?",
+    r: "Apri il prossimo viaggio e premi \"Prenota il tuo posto\": lasci nome, email e telefono, non paghi niente online. Ti teniamo il posto e ricevi subito un codice di prenotazione con i dati per l'acconto. Quando l'acconto arriva sei ufficialmente nel gruppo.",
+  },
   {
     d: "Posso partire da solo/a?",
     r: "Certo, è il modo più comune! La maggior parte delle persone parte da sola: il gruppo diventa la tua compagnia di viaggio.",
@@ -28,10 +32,10 @@ const DOMANDE = [
   },
 ];
 
-export function Domande({ limite }: { limite?: number }) {
+export function Domande() {
   return (
     <div className="domande">
-      {DOMANDE.slice(0, limite).map((x) => (
+      {DOMANDE.map((x) => (
         <details key={x.d}>
           <summary>{x.d}</summary>
           <p>{x.r}</p>

@@ -9,6 +9,7 @@
 | 4 | Login e ruoli nel gestionale (indispensabile prima di metterlo online) | ⏳ prossima |
 | 5 | Email automatiche: conferma della richiesta con i dati per bonifico/Revolut, conferma pagamento, promemoria del saldo | |
 | 6 | Conti nel gestionale: spese, saldo e margine per partenza (anticipata su richiesta di Mohamed) | ✅ PR #5 |
+| 3c | Sito ripensato per il telefono: una pagina sola sul prossimo viaggio, viaggi passati, cosa facciamo (parere di Mohamed) | 🔄 questa PR |
 
 La lista completa delle idee per il gestionale, in ordine di utilità, è in [concept.md](concept.md).
 
@@ -58,5 +59,15 @@ Il concept completo è in [concept.md](concept.md). In pratica:
 - **Webapp (telefono)**: nuova scheda **Conti** con il saldo, le spese da pagare (un tocco per segnarle pagate) e un modulo per registrare una spesa al volo.
 - **Dati di esempio**: 6 spese (5 sul Marocco, 1 generale).
 - **Test**: 3 nuovi test condivisi e 3 nuovi test dell'API, con un caso completo (acconti, saldo, annullamento con rimborso, spese pagate e da pagare, spesa generale) controllato al centesimo.
+
+## Tappa 3c (sito per il telefono) – cosa è stato fatto
+
+- **Home in una pagina sola** (D26): "Scopri il nostro prossimo viaggio", la scheda del prossimo viaggio con "Prenota il tuo posto", cosa facciamo (viaggi, weekend trip, day trip, retreat), viaggi passati, chi siamo, FAQ, contatti e il pulsante finale al centro.
+- **Menu in alto a destra**: ☰ sul telefono, voci in fila sul computer.
+- **Tolti** il catalogo con i filtri (`/viaggi`) e la pagina "Come funziona": i vecchi indirizzi portano alla home. La domanda "Come si prenota?" è entrata nelle FAQ.
+- **Stile nuovo** (D27), meno "agenzia": titoli grandi, sezioni scure, riquadri colorati.
+- **Pagina del viaggio**: barra "Prenota" fissa in basso sul telefono.
+- **API**: nuova rotta `GET /pubblico/viaggi-passati`, con un test. Due viaggi passati nei dati di esempio.
+- **Da completare con Mohamed**: testo di "Chi siamo", contatti veri in `apps/sito/lib/contatti.ts`, testi di "Cosa facciamo".
 
 > ⚠️ Il gestionale **non ha ancora il login** (arriva nella tappa 4): non va messo online prima di allora.

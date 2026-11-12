@@ -95,6 +95,16 @@ export type ViaggioPubblico = Omit<Viaggio, "stato" | "creatoIl" | "aggiornatoIl
 };
 
 /**
+ * Un viaggio già fatto, per la sezione "Viaggi passati" del sito.
+ * Solo quello che serve per una tessera: niente prezzi, posti o iscritti.
+ */
+export type ViaggioPassato = Pick<Viaggio, "slug" | "titolo" | "destinazione" | "immagineUrl" | "stili" | "durataGiorni"> & {
+  /** Le date dell'ultima volta che siamo partiti. */
+  dataInizio: string;
+  dataFine: string;
+};
+
+/**
  * Cosa manca a un viaggio per poter essere pubblicato.
  * Una bozza può essere incompleta; un viaggio pubblicato no, perché lo vedono i clienti.
  * Restituisce la lista dei problemi: vuota = si può pubblicare.

@@ -175,3 +175,22 @@ Se una decisione cambia, non si cancella: si aggiunge una nuova voce che la sost
 
 **Scelta:** il margine di una partenza è "ricavi attesi − tutti i costi registrati", dove i ricavi attesi contano il prezzo intero per chi occupa un posto e quanto hanno già versato gli altri.
 **Perché:** prima della partenza quasi nessuno ha saldato, quindi un margine sull'incassato sarebbe sempre negativo e non direbbe niente. Quello sui ricavi attesi risponde alla domanda vera: "questa partenza, così com'è, ci fa guadagnare?". L'incassato e i costi pagati sono mostrati accanto, per vedere anche la situazione di cassa.
+
+### D26 – Il sito è una pagina sola, centrata sul prossimo viaggio
+*2026-11-12 · richiesta di Mohamed*
+
+**Scelta:** niente catalogo con filtri né pagina "Come funziona". La home è una pagina sola: prossimo viaggio prenotabile, cosa facciamo, viaggi passati, chi siamo, FAQ, contatti. Il menu porta alle sezioni (`/#faq`, ...). Resta la pagina di ogni viaggio con il programma completo e la richiesta di iscrizione.
+**Perché:** all'inizio si farà un viaggio alla volta. Un catalogo con un solo viaggio, una ricerca e sei "stili" fa sembrare un'agenzia grande e vuota; una pagina che dice "ecco dove andiamo, prenota" è più onesta e si legge bene col pollice.
+**Se i viaggi diventano più di uno:** il primo (partenza più vicina) è in grande, gli altri in una lista "Più avanti". Nessuno sparisce, quindi nessun viaggio pubblicato diventa impossibile da prenotare.
+**Viaggi passati:** nuova rotta `GET /pubblico/viaggi-passati`, che restituisce solo titolo, destinazione, foto e date (niente prezzi o iscritti). Contano i viaggi pubblicati o chiusi con una partenza già iniziata e non annullata.
+**I vecchi indirizzi** `/viaggi` e `/come-funziona` fanno un redirect temporaneo (307) alla home, così un link già condiviso non finisce su "pagina non trovata".
+**"Cosa facciamo"** per ora è un testo fisso (viaggi, weekend trip, day trip, retreat). Se diventeranno tipi veri di viaggio si potrà aggiungere un campo "tipo" ai viaggi e mostrare, per ogni tipo, il prossimo in programma.
+
+### D27 – Uno stile da "gruppo di amici", non da agenzia
+*2026-11-12*
+
+**Scelta:** titoli grandi e pieni, una apertura che riempie lo schermo del telefono, poche scatole, riquadri a colori decisi, FAQ come semplice elenco con il "+". Il prezzo si vede nella scheda del viaggio, non è il protagonista. Colori di prima (petrolio, corallo, sabbia) più un verde notte per le sezioni scure.
+**Perché:** il parere di Mohamed: "sembra proprio agenzia viaggi". Il riferimento indicato (Soloevents) ha il tono di chi organizza eventi per una community.
+**Telefono prima di tutto:** il CSS è scritto per lo schermo stretto e si allarga con `@media (min-width: ...)`. Pulsanti alti 52 px, menu ☰ in alto a destra, viaggi passati che scorrono di lato, barra "Prenota" fissa in basso nella pagina del viaggio.
+**Scartato:** un carattere scaricato da Google Fonts: servirebbe la rete durante la costruzione dell'immagine Docker e rallenterebbe la pagina sul telefono. Si usano i caratteri del sistema (San Francisco su iPhone, Roboto su Android).
+
