@@ -1,0 +1,164 @@
+/* Stile della webapp per telefono. Tutte le regole iniziano con .wa, così non toccano
+   la versione completa. I colori sono quelli del gestionale (variabili in stile.css). */
+
+.wa {
+  --raggio: 14px;
+  min-height: 100dvh;
+  background: var(--sfondo);
+  /* Spazio per la barra in basso e per la "tacca"/barra gesti dei telefoni (safe-area). */
+  padding-bottom: calc(76px + env(safe-area-inset-bottom));
+  -webkit-tap-highlight-color: transparent;
+}
+.wa-pagina { max-width: 560px; margin: 0 auto; padding: 0 16px; }
+
+/* Testata */
+.wa-testata {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; align-items: center; gap: 8px;
+  margin: 0 -16px 12px; padding: calc(12px + env(safe-area-inset-top)) 16px 12px;
+  background: var(--sfondo); border-bottom: 1px solid var(--bordo);
+}
+.wa-titoli { flex: 1; min-width: 0; }
+.wa-titoli h1 { font-size: 1.35rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wa-titoli p { margin: 2px 0 0; color: var(--tenue); font-size: 0.9rem; }
+.wa-titoli p::first-letter { text-transform: uppercase; }
+.wa-indietro, .wa-icona {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border-radius: 50%; border: none; background: transparent;
+  font-size: 1.6rem; color: var(--primario); text-decoration: none; cursor: pointer;
+}
+.wa-indietro { font-size: 2.2rem; margin-left: -10px; }
+.wa-icona:active, .wa-indietro:active { background: #e3efee; }
+
+/* Testi */
+.wa-piccolo { color: var(--tenue); font-size: 0.85rem; }
+.wa-vuoto { color: var(--tenue); text-align: center; padding: 24px 0; }
+.wa-errore { background: #fdecea; color: var(--errore); padding: 12px 14px; border-radius: 10px; }
+.wa-occhiello { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--primario); }
+.wa-nota { font-style: italic; margin: 0; }
+
+/* Schede */
+.wa-scheda {
+  display: flex; flex-direction: column; gap: 6px;
+  background: var(--carta); border: 1px solid var(--bordo); border-radius: var(--raggio);
+  padding: 14px 16px; color: var(--testo); text-decoration: none;
+}
+a.wa-scheda:active { background: #f1f5f5; }
+.wa-scheda > strong { font-size: 1.05rem; }
+.wa-prossima { margin-bottom: 20px; border-color: #b9d8d5; }
+.wa-riassunto { margin-bottom: 12px; }
+.wa-riga-info { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.wa-elenco-schede { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+
+.wa-barra-posti { height: 8px; border-radius: 99px; background: #e6e9ed; overflow: hidden; margin: 4px 0; }
+.wa-barra-posti span { display: block; height: 100%; background: var(--primario); border-radius: 99px; }
+
+/* Gruppi della schermata Oggi */
+.wa-gruppo { margin-bottom: 22px; }
+.wa-gruppo h2 { font-size: 1.05rem; margin: 0; display: flex; align-items: center; gap: 8px; }
+.wa-gruppo > .wa-piccolo { margin: 2px 0 8px; }
+.wa-conteggio { background: #e3efee; color: var(--primario); border-radius: 99px; padding: 1px 9px; font-size: 0.8rem; }
+.wa-elenco { list-style: none; margin: 0; padding: 0; background: var(--carta); border: 1px solid var(--bordo); border-radius: var(--raggio); overflow: hidden; }
+.wa-elenco li + li { border-top: 1px solid var(--bordo); }
+.wa-riga { display: flex; align-items: center; gap: 10px; padding: 12px 14px; min-height: 56px; color: var(--testo); text-decoration: none; }
+.wa-riga:active { background: #f1f5f5; }
+.wa-riga-testo { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.wa-riga-testo .wa-piccolo { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wa-importo { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; display: flex; flex-direction: column; }
+.wa-importo small { font-weight: 400; color: var(--tenue); font-size: 0.75rem; }
+.wa-freccia { color: var(--tenue); font-size: 1.4rem; }
+
+/* Filtri a "pillole", scorrevoli in orizzontale */
+.wa-filtri { display: flex; gap: 8px; overflow-x: auto; margin: 0 -16px 12px; padding: 2px 16px; scrollbar-width: none; }
+.wa-filtri::-webkit-scrollbar { display: none; }
+.wa-filtri button {
+  flex: none; border: 1px solid var(--bordo); background: var(--carta); color: var(--testo);
+  border-radius: 99px; padding: 8px 14px; font: inherit; font-size: 0.9rem; min-height: 40px;
+}
+.wa-filtri button span { color: var(--tenue); margin-left: 2px; }
+.wa-filtri button[aria-pressed="true"] { background: var(--primario); border-color: var(--primario); color: #fff; }
+.wa-filtri button[aria-pressed="true"] span { color: #cfe5e3; }
+
+/* Scheda di un iscritto */
+.wa-iscritto { padding: 0; gap: 0; }
+.wa-iscritto.aperta { border-color: #9cc8c4; box-shadow: 0 4px 16px rgb(15 94 90 / 10%); }
+.wa-iscritto-testa {
+  display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+  background: none; border: none; font: inherit; color: inherit; padding: 14px 16px; cursor: pointer;
+}
+.wa-stati { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.wa-stati .stato { font-size: 0.72rem; padding: 0.15rem 0.5rem; }
+.wa-iscritto-corpo { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--bordo); padding-top: 14px; }
+.wa-iscritto-corpo p { margin: 0; }
+.wa-contatti { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.wa-contatti a {
+  display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: 12px;
+  background: #e3efee; color: var(--primario-scuro); text-decoration: none; font-weight: 600; font-size: 0.9rem;
+}
+.wa-contatti a:active { background: #cfe5e3; }
+.wa-pagamenti { list-style: none; margin: 0; padding: 0; font-size: 0.9rem; }
+.wa-pagamenti li { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px dashed var(--bordo); }
+
+/* Pulsanti */
+.wa-azioni { display: flex; flex-wrap: wrap; gap: 8px; }
+.wa-pulsante {
+  flex: 1 1 auto; min-height: 48px; padding: 0 16px; border-radius: 12px; font: inherit; font-weight: 600;
+  border: 1px solid var(--bordo); background: var(--carta); color: var(--testo); cursor: pointer;
+}
+.wa-pulsante.primario { background: var(--primario); border-color: var(--primario); color: #fff; }
+.wa-pulsante.pericolo { color: var(--errore); }
+.wa-pulsante.leggero { border-color: transparent; color: var(--tenue); flex: 0 0 auto; }
+.wa-pulsante.largo { flex: 1 1 100%; }
+.wa-pulsante:disabled { opacity: 0.5; }
+
+/* Messaggio dell'ultima operazione */
+.wa-avviso .avviso { border-radius: 12px; margin-bottom: 12px; }
+
+/* Foglio che sale dal basso (registra pagamento) */
+.wa-sfondo-foglio {
+  position: fixed; inset: 0; z-index: 20; background: rgb(0 0 0 / 40%);
+  display: flex; align-items: flex-end; justify-content: center;
+  animation: wa-compari 0.15s ease-out;
+}
+.wa-foglio {
+  width: 100%; max-width: 560px; max-height: 92dvh; overflow-y: auto;
+  background: var(--carta); border-radius: 20px 20px 0 0;
+  padding: 20px 16px calc(16px + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; gap: 12px;
+  animation: wa-sali 0.2s ease-out;
+}
+.wa-foglio h2 { font-size: 1.15rem; margin: 0; }
+.wa-foglio p { margin: 0; }
+.wa-campo { display: flex; flex-direction: column; gap: 4px; border: none; padding: 0; margin: 0; min-width: 0; }
+.wa-campo > span, .wa-campo legend { font-size: 0.85rem; font-weight: 600; padding: 0; margin-bottom: 4px; }
+/* 16px: con un carattere più piccolo l'iPhone ingrandisce la pagina quando tocchi il campo. */
+.wa-campo input { font: inherit; font-size: 16px; padding: 12px; border: 1px solid var(--bordo); border-radius: 10px; width: 100%; min-height: 48px; background: var(--carta); }
+.wa-campo input[aria-invalid="true"] { border-color: var(--errore); }
+.wa-campo input:focus { outline: 2px solid var(--primario); outline-offset: 1px; }
+.wa-due { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.wa-scorciatoie { display: flex; flex-wrap: wrap; gap: 8px; }
+.wa-scorciatoie button { border: 1px dashed #9cc8c4; background: #f3f9f8; color: var(--primario-scuro); border-radius: 99px; padding: 8px 12px; font: inherit; font-size: 0.85rem; min-height: 40px; }
+.wa-segmenti { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--bordo); border-radius: 10px; overflow: hidden; }
+.wa-segmenti button { border: none; background: var(--carta); font: inherit; font-size: 0.85rem; min-height: 44px; color: var(--testo); }
+.wa-segmenti button + button { border-left: 1px solid var(--bordo); }
+.wa-segmenti button[aria-pressed="true"] { background: var(--primario); color: #fff; font-weight: 600; }
+
+@keyframes wa-compari { from { opacity: 0; } }
+@keyframes wa-sali { from { transform: translateY(40px); opacity: 0.6; } }
+@media (prefers-reduced-motion: reduce) {
+  .wa-sfondo-foglio, .wa-foglio { animation: none; }
+}
+
+/* Barra in basso */
+.wa-barra {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  background: var(--carta); border-top: 1px solid var(--bordo);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.wa-barra a {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  min-height: 60px; font-size: 0.75rem; color: var(--tenue); text-decoration: none;
+}
+.wa-barra a span { font-size: 1.3rem; line-height: 1; }
+.wa-barra a.active { color: var(--primario); font-weight: 700; }

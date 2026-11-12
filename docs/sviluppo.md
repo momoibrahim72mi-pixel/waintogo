@@ -66,6 +66,14 @@ docker compose exec api node dist/esempi.js
 2. Nel **gestionale**, sul cruscotto, la persona appare in "Richieste da confermare". Cliccala, apri "Pagamenti" e registra l'acconto: l'iscrizione diventa confermata da sola.
 3. Riempi una partenza: chi chiede dopo finisce in lista d'attesa, e sul sito la partenza appare "Completa".
 
+## Provare la webapp per telefono
+
+La webapp è su `/webapp` del gestionale: http://localhost:8080/webapp con Docker, http://localhost:5173/webapp con `pnpm dev`.
+
+- **Dal computer**: in Chrome apri gli strumenti per sviluppatori (`F12`) e premi l'icona del telefono ("Toggle device toolbar", `Ctrl+Shift+M`). Scegli un telefono, per esempio iPhone 13, e ricarica la pagina.
+- **Installazione e funzionamento senza rete**: si provano solo con la versione compilata (Docker, oppure `pnpm --filter @waintogo/gestionale build` e poi `pnpm --filter @waintogo/gestionale exec vite preview`), perché in sviluppo il service worker è spento (D23). In Chrome, strumenti per sviluppatori → scheda **Application** → *Manifest* e *Service workers*.
+- **Da un telefono vero**: il telefono deve raggiungere il server. Con il cluster su OCI basterà aprire l'indirizzo del gestionale e aggiungere `/webapp`, poi dal menu del browser "Aggiungi a schermata Home" (su iPhone da Safari, pulsante Condividi). L'installazione richiede HTTPS, che avremo con il dominio e cert-manager.
+
 ## Test
 
 ```bash
@@ -95,7 +103,8 @@ waintogo/
 ├── apps/
 │   ├── api/            src/server.ts avvia; src/viaggi, partenze, iscrizioni, pubblico, cruscotto: rotte e accesso ai dati; test/ i test
 │   ├── sito/           app/ le pagine (ogni cartella = un indirizzo), components/ i pezzi riusati, lib/ chiamate all'API e formati
-│   └── gestionale/     src/pagine/ le pagine, src/componenti/ i pezzi riusati, src/api.ts le chiamate all'API, nginx.conf il server
+│   └── gestionale/     src/pagine/ le pagine per computer, src/webapp/ la webapp per telefono, src/componenti/ i pezzi riusati,
+│                       src/api.ts le chiamate all'API, public/ manifest, icone e service worker, nginx.conf il server
 ├── packages/
 │   ├── shared/         regole di validità e tipi, usati da API, sito e gestionale
 │   └── db/             schema delle tabelle (src/schema.ts) e migrazioni (drizzle/)

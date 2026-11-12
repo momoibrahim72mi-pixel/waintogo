@@ -145,3 +145,7 @@ h3 { font-size: 1rem; margin: 1rem 0 0.75rem; }
 @media (max-width: 640px) {
   .griglia-3, .griglia-4, .griglia-da-fare { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Collegamento alla webapp per telefono, a destra nell'intestazione */
+.link-webapp { margin-left: auto; font-size: 0.9rem; color: var(--tenue); text-decoration: none; }
+.link-webapp:hover { color: var(--primario); }

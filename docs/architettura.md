@@ -90,6 +90,27 @@ Dentro l'API il codice è diviso in tre livelli:
 
 Mettere la logica in un solo posto significa che le regole (per esempio "non si possono superare i posti disponibili") sono scritte una volta sola, e sito e gestionale non possono contraddirsi.
 
+### Le due interfacce del gestionale
+
+Il gestionale è **una sola app** con due interfacce, scelte in base all'indirizzo (vedi `apps/gestionale/src/App.tsx`):
+
+```
+admin.waintogo.it/            → versione completa (computer)   src/pagine/, src/componenti/
+admin.waintogo.it/webapp/...  → webapp per telefono            src/webapp/
+```
+
+Entrambe usano lo stesso `src/api.ts`, le stesse regole di `@waintogo/shared` e gli stessi componenti per gli stati (`src/componenti/Stato.tsx`). Cambia solo come sono disegnate le pagine.
+
+La webapp è una **PWA** (Progressive Web App): un sito che il telefono può installare come un'app. I file che servono sono in `apps/gestionale/public/`:
+
+| File | A cosa serve |
+|---|---|
+| `webapp.webmanifest` | Nome, colori, icone e indirizzo di partenza (`/webapp`) dell'app installata |
+| `icone/` | Icone per Android (192 e 512 px, più una "maskable" che Android ritaglia a cerchio o goccia) e per iPhone (`apple-touch-icon.png`) |
+| `webapp-sw.js` | Il service worker: salva i file dell'app per aprirla subito anche con poca rete. Non salva mai le risposte di `/api` (D23) |
+
+`index.html` collega il manifest **solo** sugli indirizzi `/webapp`, così la versione completa non propone di installarsi. nginx manda `index.html` e il service worker con `Cache-Control: no-cache`, per far arrivare subito ogni versione nuova, mentre i file in `/assets/` (che hanno un codice diverso nel nome a ogni versione) si tengono in memoria per un anno.
+
 ### Come il gestionale raggiunge l'API
 
 Il gestionale chiama sempre indirizzi relativi come `/api/health`.
