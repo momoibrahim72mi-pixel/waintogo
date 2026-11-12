@@ -54,7 +54,7 @@ Con il database vuoto sito e gestionale non mostrano niente. Per riempirlo:
 pnpm --filter @waintogo/api esempi
 ```
 
-Crea 4 viaggi pubblicati (Islanda, Marocco, Giappone, Algarve) con le loro partenze, e 11 iscritti sulla prima partenza del Marocco, con pagamenti in stati diversi. Se nel database ci sono già dei viaggi non fa niente, quindi non può rovinare dati veri. Con docker compose lo stesso comando si lancia dentro il container dell'API:
+Crea 4 viaggi pubblicati (Islanda, Marocco, Giappone, Algarve) con le loro partenze, 11 iscritti sulla prima partenza del Marocco con pagamenti in stati diversi, e 6 spese (5 della partenza del Marocco, pagate e da pagare, e una generale) per vedere la pagina Conti. Se nel database ci sono già dei viaggi non fa niente, quindi non può rovinare dati veri. Con docker compose lo stesso comando si lancia dentro il container dell'API:
 
 ```bash
 docker compose exec api node dist/esempi.js
@@ -65,6 +65,7 @@ docker compose exec api node dist/esempi.js
 1. Sul **sito** apri un viaggio, scegli una partenza e premi "Chiedi il posto". Alla fine ricevi un codice come `WTG-7KQ3PA` e le istruzioni di pagamento.
 2. Nel **gestionale**, sul cruscotto, la persona appare in "Richieste da confermare". Cliccala, apri "Pagamenti" e registra l'acconto: l'iscrizione diventa confermata da sola.
 3. Riempi una partenza: chi chiede dopo finisce in lista d'attesa, e sul sito la partenza appare "Completa".
+4. Nel menu **Conti** guarda saldo e margine; registra una spesa e segnane una come pagata: i numeri cambiano subito.
 
 ## Provare la webapp per telefono
 

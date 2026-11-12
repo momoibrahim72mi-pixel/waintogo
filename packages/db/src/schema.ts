@@ -6,7 +6,7 @@
 //
 // Convenzione: in TypeScript i nomi sono camelCase (dataInizio),
 // nel database snake_case (data_inizio), come si usa in SQL.
-import { LIVELLI, METODI_PAGAMENTO, STATI_ISCRIZIONE, STATI_VIAGGIO } from "@waintogo/shared";
+import { CATEGORIE_SPESA, LIVELLI, METODI_PAGAMENTO, STATI_ISCRIZIONE, STATI_VIAGGIO } from "@waintogo/shared";
 import { relations } from "drizzle-orm";
 import { boolean, date, index, integer, pgEnum, pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 
@@ -15,6 +15,7 @@ export const statoViaggio = pgEnum("stato_viaggio", STATI_VIAGGIO);
 export const livelloViaggio = pgEnum("livello_viaggio", LIVELLI);
 export const statoIscrizione = pgEnum("stato_iscrizione", STATI_ISCRIZIONE);
 export const metodoPagamento = pgEnum("metodo_pagamento", METODI_PAGAMENTO);
+export const categoriaSpesa = pgEnum("categoria_spesa", CATEGORIE_SPESA);
 
 // Colonne che hanno tutte le tabelle.
 const colonneComuni = {
@@ -121,6 +122,28 @@ export const pagamenti = pgTable("pagamenti", {
   nota: text("nota").notNull().default(""),
 });
 
+/**
+ * Una spesa dell'agenzia: un costo di una partenza (partenza_id) o una spesa generale (partenza_id vuoto).
+ * Le entrate non stanno qui: sono i pagamenti degli iscritti.
+ */
+export const spese = pgTable(
+  "spese",
+  {
+    ...colonneComuni,
+    // onDelete restrict: una partenza con delle spese non si può cancellare per sbaglio.
+    partenzaId: uuid("partenza_id").references(() => partenze.id, { onDelete: "restrict" }),
+    descrizione: text("descrizione").notNull(),
+    categoria: categoriaSpesa("categoria").notNull(),
+    importoCentesimi: integer("importo_centesimi").notNull(),
+    // Quando è stata pagata o, se non è ancora pagata, quando va pagata.
+    data: date("data", { mode: "string" }).notNull(),
+    pagata: boolean("pagata").notNull().default(false),
+    fornitore: text("fornitore").notNull().default(""),
+    nota: text("nota").notNull().default(""),
+  },
+  (t) => [index("spese_partenza_idx").on(t.partenzaId), index("spese_data_idx").on(t.data)],
+);
+
 // Le relazioni non creano niente nel database: servono a Drizzle per caricare
 // dati collegati (un viaggio con le sue tappe e partenze) con una sola richiesta.
 export const viaggiRelazioni = relations(viaggi, ({ many }) => ({
@@ -133,6 +156,7 @@ export const tappeRelazioni = relations(tappeItinerario, ({ one }) => ({
 export const partenzeRelazioni = relations(partenze, ({ one, many }) => ({
   viaggio: one(viaggi, { fields: [partenze.viaggioId], references: [viaggi.id] }),
   iscrizioni: many(iscrizioni),
+  spese: many(spese),
 }));
 export const iscrizioniRelazioni = relations(iscrizioni, ({ one, many }) => ({
   partenza: one(partenze, { fields: [iscrizioni.partenzaId], references: [partenze.id] }),
@@ -140,4 +164,7 @@ export const iscrizioniRelazioni = relations(iscrizioni, ({ one, many }) => ({
 }));
 export const pagamentiRelazioni = relations(pagamenti, ({ one }) => ({
   iscrizione: one(iscrizioni, { fields: [pagamenti.iscrizioneId], references: [iscrizioni.id] }),
+}));
+export const speseRelazioni = relations(spese, ({ one }) => ({
+  partenza: one(partenze, { fields: [spese.partenzaId], references: [partenze.id] }),
 }));

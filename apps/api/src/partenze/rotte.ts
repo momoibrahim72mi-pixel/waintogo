@@ -5,7 +5,7 @@
 //   PUT    /partenze/:id                 modifica date, prezzo, posti...
 //   POST   /partenze/:id/annulla         annulla (resta visibile nel gestionale, sparisce dal sito)
 //   POST   /partenze/:id/riattiva        toglie l'annullamento
-//   DELETE /partenze/:id                 elimina, solo se non ha iscritti
+//   DELETE /partenze/:id                 elimina, solo se non ha iscritti né spese
 //   POST   /partenze/:id/iscrizioni      aggiunge un iscritto a mano (chi prenota al telefono)
 //   POST   /iscrizioni/:id/stato         { stato }: conferma, lista d'attesa, annulla...
 //   POST   /iscrizioni/:id/pagamenti     registra un pagamento ricevuto
@@ -62,6 +62,9 @@ export async function rottePartenze(app: FastifyInstance, { db }: { db: Db }) {
     if (!partenza) return reply;
     if (partenza.iscrizioni.length > 0) {
       return conflitto(reply, "La partenza ha degli iscritti: annullala invece di eliminarla");
+    }
+    if (partenza.spese.length > 0) {
+      return conflitto(reply, "La partenza ha delle spese registrate: annullala invece di eliminarla");
     }
     await archivio.eliminaPartenza(db, partenza.id);
     return reply.code(204).send();

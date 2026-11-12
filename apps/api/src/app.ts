@@ -3,10 +3,12 @@
 // richieste finte (app.inject) senza aprire una porta di rete.
 import type { Db } from "@waintogo/db";
 import Fastify from "fastify";
+import { rotteConti } from "./conti/rotte.js";
 import { rotteCruscotto } from "./cruscotto/rotte.js";
 import { type Oggi, oggiVero } from "./http.js";
 import { rottePartenze } from "./partenze/rotte.js";
 import { rottePubbliche } from "./pubblico/rotte.js";
+import { rotteSpese } from "./spese/rotte.js";
 import { rotteViaggi } from "./viaggi/rotte.js";
 
 type Opzioni = {
@@ -25,6 +27,8 @@ export function creaApp({ db, oggi = oggiVero, log = false }: Opzioni) {
   app.register(rotteViaggi, { db });
   app.register(rottePartenze, { db });
   app.register(rotteCruscotto, { db, oggi });
+  app.register(rotteSpese, { db });
+  app.register(rotteConti, { db, oggi });
 
   // Rotte per il sito pubblico.
   app.register(rottePubbliche, { db, oggi });

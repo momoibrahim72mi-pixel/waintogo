@@ -4,9 +4,11 @@
 //   /webapp                 Oggi: le cose da fare
 //   /webapp/partenze        le prossime partenze
 //   /webapp/partenze/:id    gli iscritti di una partenza: chiamare, scrivere, registrare un pagamento
+//   /webapp/conti           saldo, spese da pagare, registrare una spesa al volo
 // Creare e modificare i viaggi resta nella versione completa: sul telefono sarebbe scomodo.
 import { useEffect } from "react";
 import { NavLink, Route, Routes } from "react-router";
+import { Conti } from "./Conti";
 import { Oggi } from "./Oggi";
 import { Partenza } from "./Partenza";
 import { Partenze } from "./Partenze";
@@ -25,6 +27,7 @@ export function WebApp() {
           <Route index element={<Oggi />} />
           <Route path="partenze" element={<Partenze />} />
           <Route path="partenze/:id" element={<Partenza />} />
+          <Route path="conti" element={<Conti />} />
           <Route path="*" element={<p className="wa-vuoto">Pagina non trovata.</p>} />
         </Routes>
       </div>
@@ -38,6 +41,10 @@ export function WebApp() {
         <NavLink to="/webapp/partenze">
           <span aria-hidden="true">✈</span>
           Partenze
+        </NavLink>
+        <NavLink to="/webapp/conti">
+          <span aria-hidden="true">€</span>
+          Conti
         </NavLink>
         {/* Link normale (non NavLink): esce dalla webapp e apre la versione completa. */}
         <a href="/">

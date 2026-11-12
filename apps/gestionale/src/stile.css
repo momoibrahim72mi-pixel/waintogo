@@ -149,3 +149,14 @@ h3 { font-size: 1rem; margin: 1rem 0 0.75rem; }
 /* Collegamento alla webapp per telefono, a destra nell'intestazione */
 .link-webapp { margin-left: auto; font-size: 0.9rem; color: var(--tenue); text-decoration: none; }
 .link-webapp:hover { color: var(--primario); }
+
+/* Conti */
+.positivo { color: var(--ok); }
+.negativo { color: var(--errore); }
+.tabella tfoot td { border-top: 2px solid var(--bordo); border-bottom: none; }
+.tabella td.a-capo { white-space: normal; }
+.numeri-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.scelta { font-size: 0.9rem; }
+@media (max-width: 640px) {
+  .numeri-3 { grid-template-columns: minmax(0, 1fr); }
+}

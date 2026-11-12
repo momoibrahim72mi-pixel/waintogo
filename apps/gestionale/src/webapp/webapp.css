@@ -152,7 +152,7 @@ a.wa-scheda:active { background: #f1f5f5; }
 /* Barra in basso */
 .wa-barra {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
-  display: grid; grid-template-columns: repeat(3, 1fr);
+  display: grid; grid-template-columns: repeat(4, 1fr);
   background: var(--carta); border-top: 1px solid var(--bordo);
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -162,3 +162,15 @@ a.wa-scheda:active { background: #f1f5f5; }
 }
 .wa-barra a span { font-size: 1.3rem; line-height: 1; }
 .wa-barra a.active { color: var(--primario); font-weight: 700; }
+
+/* Conti */
+.wa-saldo { margin-bottom: 10px; }
+.wa-cifra { font-size: 2rem; font-variant-numeric: tabular-nums; }
+.wa-riquadri { margin-bottom: 14px; }
+.wa-riquadri .wa-scheda strong { font-size: 1.15rem; }
+.wa-largo { width: 100%; margin-bottom: 20px; }
+button.wa-riga { width: 100%; border: none; background: none; font: inherit; text-align: left; cursor: pointer; }
+.wa-campo select { font: inherit; font-size: 16px; padding: 12px; border: 1px solid var(--bordo); border-radius: 10px; width: 100%; min-height: 48px; background: var(--carta); color: var(--testo); }
+.wa-segmenti-2 { grid-template-columns: repeat(2, 1fr); }
+.wa .positivo { color: var(--ok); }
+.wa .negativo { color: var(--errore); }

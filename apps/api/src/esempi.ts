@@ -178,6 +178,19 @@ if (esistenti.length > 0) {
     await chiedi("POST", `/iscrizioni/${isc.id}/pagamenti`, { importoCentesimi: importo, data: oggi, metodo: i % 2 ? "revolut" : "bonifico" });
   }
   console.log("✓ 11 iscritti di esempio sul Marocco");
+
+  // Qualche spesa di esempio: costi della partenza del Marocco e una spesa generale.
+  const partenzaMarocco = marocco.partenze[0];
+  const spese = [
+    { descrizione: "Voli Milano–Marrakech A/R", categoria: "volo", importoCentesimi: 312000, pagata: true, data: oggi, fornitore: "Compagnia aerea (esempio)" },
+    { descrizione: "Riad a Marrakech, 3 notti", categoria: "alloggio", importoCentesimi: 180000, pagata: false, data: aggiungiGiorni(partenzaMarocco.dataInizio, -15), fornitore: "Riad (esempio)" },
+    { descrizione: "Campo tendato nel deserto", categoria: "alloggio", importoCentesimi: 96000, pagata: false, data: aggiungiGiorni(partenzaMarocco.dataInizio, -15) },
+    { descrizione: "Fuoristrada con autista", categoria: "trasporto", importoCentesimi: 140000, pagata: false, data: partenzaMarocco.dataInizio },
+    { descrizione: "Compenso coordinatrice", categoria: "coordinatore", importoCentesimi: 70000, pagata: false, data: aggiungiGiorni(partenzaMarocco.dataInizio, 7) },
+  ];
+  for (const spesa of spese) await chiedi("POST", "/spese", { ...spesa, partenzaId: partenzaMarocco.id });
+  await chiedi("POST", "/spese", { descrizione: "Pubblicità sui social", categoria: "pubblicita", importoCentesimi: 15000, pagata: true, data: oggi });
+  console.log("✓ 6 spese di esempio");
 }
 
 await app.close();

@@ -11,8 +11,9 @@ export const OGGI = "2026-11-09";
 export const app = creaApp({ db, oggi: () => OGGI });
 
 export async function svuota() {
-  // CASCADE svuota anche le tabelle collegate: tappe, partenze, iscrizioni, pagamenti.
-  await db.execute(sql`truncate viaggi cascade`);
+  // CASCADE svuota anche le tabelle collegate: tappe, partenze, iscrizioni, pagamenti, spese.
+  // "spese" va nominata da sola: le spese generali non sono collegate a nessuna partenza.
+  await db.execute(sql`truncate viaggi, spese cascade`);
 }
 
 export const viaggioBozza = {

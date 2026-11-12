@@ -1,12 +1,15 @@
 // Tutte le chiamate del gestionale verso l'API passano da qui.
 // Gli indirizzi sono relativi (/api/...): in sviluppo li gira Vite, nei container nginx.
 import type {
+  Conti,
   Cruscotto,
   IscrizioneInput,
   Iscrizione,
   PagamentoInput,
   Partenza,
   PartenzaInput,
+  Spesa,
+  SpesaInput,
   StatoIscrizione,
   Viaggio,
   ViaggioInput,
@@ -50,6 +53,8 @@ export type DettaglioPartenza = Partenza & {
   viaggio: { id: string; titolo: string; durataGiorni: number; istruzioniPagamento: string };
   iscrizioni: Iscrizione[];
   incassatoCentesimi: number;
+  spese: Spesa[];
+  costiCentesimi: number;
 };
 
 export const api = {
@@ -78,4 +83,17 @@ export const api = {
   registraPagamento: (iscrizioneId: string, dati: PagamentoInput) =>
     chiama<DettaglioPartenza>("POST", `/iscrizioni/${iscrizioneId}/pagamenti`, dati),
   eliminaPagamento: (id: string) => chiama<DettaglioPartenza>("DELETE", `/pagamenti/${id}`),
+
+  /** filtro: nessuno = tutte, "generali" = senza partenza, oppure l'id di una partenza. */
+  spese: (filtro?: string) => chiama<Spesa[]>("GET", filtro ? `/spese?partenza=${filtro}` : "/spese"),
+  creaSpesa: (dati: SpesaInput) => chiama<Spesa>("POST", "/spese", dati),
+  aggiornaSpesa: (id: string, dati: SpesaInput) => chiama<Spesa>("PUT", `/spese/${id}`, dati),
+  eliminaSpesa: (id: string) => chiama<void>("DELETE", `/spese/${id}`),
+  conti: (anno?: number) => chiama<Conti>("GET", anno ? `/conti?anno=${anno}` : "/conti"),
 };
+
+/** I dati di una spesa esistente, pronti da rimandare all'API (senza id e partenza). */
+export function datiSpesa(s: Spesa): SpesaInput {
+  const { id: _id, partenza: _partenza, ...dati } = s;
+  return dati;
+}
