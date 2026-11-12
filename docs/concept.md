@@ -23,29 +23,31 @@ Abbiamo guardato due siti italiani che fanno questo mestiere. Ne prendiamo le id
 
 ### Pagine
 
-1. **Home**
-   - Titolo forte e una ricerca semplice (stile e mese).
-   - **Prossime partenze**: le date più vicine, con i posti rimasti.
-   - **Stili di viaggio**: avventura, natura, città, mare, cultura, on the road. Ogni stile porta al catalogo già filtrato.
-   - **Come funziona** in 3 passi: scegli, richiedi il posto, paga l'acconto con bonifico.
-   - **Perché con noi**: piccoli gruppi, coordinatore sempre con voi, nessuna sorpresa sul prezzo.
-   - Domande frequenti, in breve.
-2. **Catalogo viaggi** (`/viaggi`): schede con titolo, destinazione, durata, "da X €", prossima partenza e un'etichetta come "ultimi posti" o "partenza garantita". Ha filtri per stile, mese, durata e prezzo.
-3. **Pagina del viaggio** (`/viaggi/<slug>`):
-   - In alto: titolo, frase di presentazione, etichette (stile, fascia d'età, impegno fisico).
+> **Versione 2 · 2026-11-12, dopo il parere di Mohamed.** La prima versione sembrava "proprio un'agenzia viaggi": catalogo con filtri, ricerca, stili di viaggio. All'inizio partirà **un viaggio alla volta**, e il sito si guarda soprattutto **dal telefono**. Quindi niente catalogo: una pagina sola che racconta chi siamo e porta dritta al prossimo viaggio. Ispirazione per il tono: siti di "eventi" più che di agenzie (Mohamed ha indicato soloeventseg.com). Scelte spiegate in [decisioni.md](decisioni.md) (D26, D27).
+
+1. **Home** (`/`), una pagina sola con le sezioni in quest'ordine. Il menu in alto a destra (☰ sul telefono) porta a ciascuna:
+   - **Apertura**: "Scopri il nostro prossimo viaggio", una frase su di noi e un pulsante che scende al viaggio. Se il prossimo viaggio ha una foto, fa da sfondo.
+   - **Prossimo viaggio** (`#prossimo-viaggio`): la scheda grande del viaggio con la partenza più vicina: date, prezzo, acconto, posti, coordinatore, e i pulsanti **Prenota il tuo posto** e **Vedi il programma**. Se ci sono altri viaggi in programma compaiono in piccolo sotto ("Più avanti"); se non ce n'è nessuno, un invito a contattarci.
+   - **Cosa facciamo** (`#cosa-facciamo`): viaggi, weekend trip, day trip, retreat.
+   - **Viaggi passati** (`#viaggi-passati`): le tessere dei viaggi già fatti; sul telefono scorrono di lato.
+   - **Chi siamo** (`#chi-siamo`): testo in bozza, da scrivere.
+   - **FAQ** (`#faq`): le domande frequenti, che si aprono toccandole.
+   - **Contatti** (`#contatti`): WhatsApp, Instagram, email (da inserire in `apps/sito/lib/contatti.ts`).
+   - In fondo, **al centro**, il pulsante "Scopri il prossimo viaggio".
+2. **Pagina del viaggio** (`/viaggi/<slug>`), il "programma":
+   - In alto: titolo, frase di presentazione, etichette (stile, fascia d'età).
    - Riquadro **"In breve"**: durata, prezzo da, fascia d'età, prossima partenza, impegno fisico.
-   - **Il viaggio**: il racconto.
-   - **Punti forti**: 3–5 frasi.
-   - **Giorno per giorno**: l'itinerario.
-   - **Cosa è incluso / cosa non è incluso**.
-   - **Partenze e prezzi**: per ogni data ci sono prezzo, acconto, posti rimasti, il coordinatore e lo stato ("partenza garantita", "ultimi posti", "completo, lista d'attesa"). Accanto c'è il pulsante **Richiedi il tuo posto**.
-   - **Info utili**: documenti, cosa portare, clima.
-4. **Richiesta di iscrizione**: nome, cognome, email, telefono, data di nascita, note e consenso privacy. Dopo l'invio compare subito la conferma con il **codice della prenotazione** (es. `WTG-7KQ3PA`), l'importo dell'acconto e le istruzioni per il pagamento, da usare con il codice come causale. Se la partenza è piena, la persona entra in **lista d'attesa** e lo vede scritto.
-5. **Come funziona e FAQ** (`/come-funziona`).
+   - **Il viaggio**, **Punti forti**, **Giorno per giorno**, **Cosa è incluso / non incluso**, **Info utili**.
+   - **Partenze e prezzi**: per ogni data prezzo, acconto, posti rimasti, coordinatore e stato ("partenza garantita", "ultimi posti", "completo, lista d'attesa"), con il pulsante **Richiedi il posto**.
+   - Sul telefono una **barra fissa in basso** con data, prezzo e "Prenota".
+3. **Richiesta di iscrizione**: nome, cognome, email, telefono, data di nascita, note e consenso privacy. Dopo l'invio compare subito la conferma con il **codice della prenotazione** (es. `WTG-7KQ3PA`), l'importo dell'acconto e le istruzioni per il pagamento, da usare con il codice come causale. Se la partenza è piena, la persona entra in **lista d'attesa** e lo vede scritto.
+
+I vecchi indirizzi `/viaggi` (catalogo) e `/come-funziona` portano alle sezioni "Prossimo viaggio" e "FAQ" della home.
 
 ### Regole del sito
 
 - Si vedono solo i viaggi **pubblicati**, e solo le partenze **future e non annullate**.
+- **"Viaggi passati"**: i viaggi pubblicati o chiusi con almeno una partenza già iniziata e non annullata (le bozze mai). Si mostra l'ultima volta che siamo partiti.
 - **"Partenza garantita"**: le iscrizioni confermate hanno raggiunto il minimo di partecipanti, quindi il viaggio si fa di sicuro.
 - **"Ultimi posti"**: ne restano 3 o meno.
 - **"Completo"**: posti finiti. Si può ancora chiedere, ma si entra in lista d'attesa.

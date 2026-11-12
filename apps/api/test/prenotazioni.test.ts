@@ -66,6 +66,31 @@ describe("sito pubblico", () => {
     await chiedi("GET", "/pubblico/viaggi/bozza-nascosta", undefined, 404);
   });
 
+  it("elenca i viaggi passati, dal più recente, senza bozze né partenze annullate", async () => {
+    // OGGI nei test è il 2026-11-09.
+    const { viaggio: islanda } = await viaggioPubblicatoConPartenza({ ...partenzaAgosto, dataInizio: "2026-08-01" });
+    await chiedi("POST", `/viaggi/${islanda.id}/partenze`, { ...partenzaAgosto, dataInizio: "2026-09-01" }, 201);
+    const { viaggio: marocco } = await viaggioPubblicatoConPartenza({ ...partenzaAgosto, dataInizio: "2026-10-10" });
+    await chiedi("PUT", `/viaggi/${marocco.id}`, { ...viaggioCompleto, titolo: "Marocco", destinazione: "Marocco" });
+    // Un viaggio con la sola partenza passata annullata: non è mai partito.
+    const { partenza: annullata } = await viaggioPubblicatoConPartenza({ ...partenzaAgosto, dataInizio: "2026-07-01" });
+    await chiedi("POST", `/partenze/${annullata.id}/annulla`);
+    // Un viaggio solo futuro: non è passato.
+    await viaggioPubblicatoConPartenza();
+    // Una bozza con una partenza passata: non si mostra.
+    const bozza = await chiedi("POST", "/viaggi", { ...viaggioCompleto, titolo: "Bozza" }, 201);
+    await chiedi("POST", `/viaggi/${bozza.id}/partenze`, { ...partenzaAgosto, dataInizio: "2026-06-01" }, 201);
+
+    const passati = await chiedi("GET", "/pubblico/viaggi-passati");
+    expect(passati.map((v: { destinazione: string; dataInizio: string }) => [v.destinazione, v.dataInizio])).toEqual([
+      ["Marocco", "2026-10-10"],
+      ["Islanda", "2026-09-01"], // conta l'ultima volta che è partito
+    ]);
+    expect(passati[1].dataFine).toBe("2026-09-08");
+    expect(passati[0]).not.toHaveProperty("partenze");
+    expect(passati[0]).not.toHaveProperty("prezzoCentesimi");
+  });
+
   it("una richiesta tiene il posto e restituisce codice e istruzioni", async () => {
     const { partenza } = await viaggioPubblicatoConPartenza();
     const ricevuta = await chiedi("POST", "/pubblico/iscrizioni", richiesta(partenza.id), 201);

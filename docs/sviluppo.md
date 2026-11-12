@@ -28,7 +28,7 @@ docker compose up --build
 
 | Indirizzo | Cosa trovi |
 |---|---|
-| http://localhost:3000 | Sito pubblico (home, catalogo, pagina del viaggio, iscrizione) |
+| http://localhost:3000 | Sito pubblico (home con il prossimo viaggio, pagina del viaggio, iscrizione) |
 | http://localhost:8080 | Gestionale (cruscotto, viaggi, partenze, iscritti e pagamenti) |
 | http://localhost:3001/health | API |
 
@@ -54,7 +54,7 @@ Con il database vuoto sito e gestionale non mostrano niente. Per riempirlo:
 pnpm --filter @waintogo/api esempi
 ```
 
-Crea 4 viaggi pubblicati (Islanda, Marocco, Giappone, Algarve) con le loro partenze, 11 iscritti sulla prima partenza del Marocco con pagamenti in stati diversi, e 6 spese (5 della partenza del Marocco, pagate e da pagare, e una generale) per vedere la pagina Conti. Se nel database ci sono già dei viaggi non fa niente, quindi non può rovinare dati veri. Con docker compose lo stesso comando si lancia dentro il container dell'API:
+Crea 4 viaggi pubblicati con partenze future (Islanda, Marocco, Giappone, Algarve), 2 viaggi già fatti (Dolomiti, Lisbona) per la sezione "Viaggi passati", 11 iscritti sulla prima partenza del Marocco con pagamenti in stati diversi, e 6 spese (5 della partenza del Marocco, pagate e da pagare, e una generale) per vedere la pagina Conti. Se nel database ci sono già dei viaggi non fa niente, quindi non può rovinare dati veri. Con docker compose lo stesso comando si lancia dentro il container dell'API:
 
 ```bash
 docker compose exec api node dist/esempi.js
@@ -62,7 +62,7 @@ docker compose exec api node dist/esempi.js
 
 ## Cosa provare
 
-1. Sul **sito** apri un viaggio, scegli una partenza e premi "Chiedi il posto". Alla fine ricevi un codice come `WTG-7KQ3PA` e le istruzioni di pagamento.
+1. Apri il **sito dal telefono** (o con gli strumenti per sviluppatori del browser in modalità telefono): la home mostra il prossimo viaggio, il menu ☰ in alto a destra porta alle sezioni. Premi "Prenota il tuo posto". Alla fine ricevi un codice come `WTG-7KQ3PA` e le istruzioni di pagamento.
 2. Nel **gestionale**, sul cruscotto, la persona appare in "Richieste da confermare". Cliccala, apri "Pagamenti" e registra l'acconto: l'iscrizione diventa confermata da sola.
 3. Riempi una partenza: chi chiede dopo finisce in lista d'attesa, e sul sito la partenza appare "Completa".
 4. Nel menu **Conti** guarda saldo e margine; registra una spesa e segnane una come pagata: i numeri cambiano subito.
@@ -103,7 +103,7 @@ I test dell'API usano un database **separato**, `waintogo_test`, creato in autom
 waintogo/
 ├── apps/
 │   ├── api/            src/server.ts avvia; src/viaggi, partenze, iscrizioni, pubblico, cruscotto: rotte e accesso ai dati; test/ i test
-│   ├── sito/           app/ le pagine (ogni cartella = un indirizzo), components/ i pezzi riusati, lib/ chiamate all'API e formati
+│   ├── sito/           app/ le pagine (ogni cartella = un indirizzo), components/ i pezzi riusati, lib/ chiamate all'API, formati e contatti (lib/contatti.ts)
 │   └── gestionale/     src/pagine/ le pagine per computer, src/webapp/ la webapp per telefono, src/componenti/ i pezzi riusati,
 │                       src/api.ts le chiamate all'API, public/ manifest, icone e service worker, nginx.conf il server
 ├── packages/

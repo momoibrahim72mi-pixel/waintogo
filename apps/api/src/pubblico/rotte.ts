@@ -1,7 +1,8 @@
 // Rotte per il SITO PUBBLICO. Mostrano solo ciò che un visitatore può vedere:
 // viaggi pubblicati, partenze future e non annullate, nessun dato degli iscritti.
 //
-//   GET  /pubblico/viaggi          catalogo
+//   GET  /pubblico/viaggi          catalogo (viaggi con partenze future: il "prossimo viaggio")
+//   GET  /pubblico/viaggi-passati  i viaggi già fatti, dal più recente
 //   GET  /pubblico/viaggi/:slug    pagina del viaggio
 //   POST /pubblico/iscrizioni      richiesta di iscrizione → ricevuta con codice e istruzioni
 //
@@ -15,6 +16,7 @@ import {
   type PartenzaPubblica,
   type RicevutaIscrizione,
   type Viaggio,
+  type ViaggioPassato,
   type ViaggioPubblico,
 } from "@waintogo/shared";
 import { and, eq, gt } from "drizzle-orm";
@@ -28,6 +30,32 @@ export async function rottePubbliche(app: FastifyInstance, { db, oggi }: { db: D
   app.get("/pubblico/viaggi", async () => {
     const tutti = await elencoViaggi(db);
     return tutti.filter((v) => v.stato === "pubblicato").map((v) => inPubblico(v, oggi()));
+  });
+
+  // I viaggi passati: quelli con almeno una partenza già iniziata e non annullata.
+  // Valgono i viaggi pubblicati e quelli chiusi (un viaggio chiuso è finito, ma è stato vero);
+  // le bozze no. Se un viaggio è partito più volte conta l'ultima partenza.
+  app.get("/pubblico/viaggi-passati", async () => {
+    const tutti = await elencoViaggi(db);
+    const passati: ViaggioPassato[] = [];
+    for (const v of tutti) {
+      if (v.stato === "bozza") continue;
+      const ultima = v.partenze
+        .filter((p) => !p.annullata && p.dataInizio <= oggi())
+        .sort((a, b) => b.dataInizio.localeCompare(a.dataInizio))[0];
+      if (!ultima) continue;
+      passati.push({
+        slug: v.slug,
+        titolo: v.titolo,
+        destinazione: v.destinazione,
+        immagineUrl: v.immagineUrl,
+        stili: v.stili,
+        durataGiorni: v.durataGiorni,
+        dataInizio: ultima.dataInizio,
+        dataFine: ultima.dataFine,
+      });
+    }
+    return passati.sort((a, b) => b.dataInizio.localeCompare(a.dataInizio));
   });
 
   app.get<{ Params: { slug: string } }>("/pubblico/viaggi/:slug", async (req, reply) => {

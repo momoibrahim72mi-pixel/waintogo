@@ -2,7 +2,7 @@
 // nelle Server Action): il browser del visitatore non parla mai direttamente con l'API.
 // "server-only" fa fallire la build se per sbaglio questo file finisce nel browser.
 import "server-only";
-import type { RicevutaIscrizione, ViaggioPubblico } from "@waintogo/shared";
+import type { RicevutaIscrizione, ViaggioPassato, ViaggioPubblico } from "@waintogo/shared";
 
 // In docker compose e in Kubernetes l'API si chiama "api"; in sviluppo è su localhost.
 const API_URL = process.env.API_URL ?? "http://localhost:3001";
@@ -16,6 +16,7 @@ async function leggi<T>(percorso: string): Promise<T | null> {
 }
 
 export const catalogo = async () => (await leggi<ViaggioPubblico[]>("/pubblico/viaggi")) ?? [];
+export const viaggiPassati = async () => (await leggi<ViaggioPassato[]>("/pubblico/viaggi-passati")) ?? [];
 export const viaggio = (slug: string) => leggi<ViaggioPubblico>(`/pubblico/viaggi/${encodeURIComponent(slug)}`);
 
 export type EsitoIscrizione =

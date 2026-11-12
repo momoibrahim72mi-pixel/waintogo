@@ -1,4 +1,6 @@
-/* Stile del sito pubblico. Pensato prima per il telefono, poi si allarga.
+/* Stile del sito pubblico. Pensato prima per il telefono (le regole "normali" sono per lo
+   schermo stretto), poi le @media (min-width: ...) aggiungono quello che serve sugli schermi larghi.
+   Niente look da agenzia: titoli grandi e pieni, poche scatole, colori decisi (vedi D27).
    I colori sono "variabili": per cambiare il look basta toccarli qui. */
 :root {
   --sabbia: #fbf7f1;        /* sfondo */
@@ -8,6 +10,7 @@
   --linea: #e7e0d5;
   --petrolio: #0f5e5a;      /* colore principale */
   --petrolio-scuro: #0a4441;
+  --notte: #0e2624;         /* sezioni scure e piè di pagina */
   --petrolio-chiaro: #e3f0ee;
   --corallo: #d9502e;       /* pulsanti e richiami */
   --corallo-scuro: #b53f21;
@@ -24,65 +27,162 @@
 body { margin: 0; }
 img { max-width: 100%; display: block; }
 a { color: var(--petrolio); }
-h1, h2, h3 { line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 0.5em; }
+h1, h2, h3 { line-height: 1.1; letter-spacing: -0.03em; margin: 0 0 0.5em; font-weight: 800; }
 h1 { font-size: clamp(2rem, 6vw, 3.4rem); }
-h2 { font-size: clamp(1.5rem, 4vw, 2.1rem); }
+h2 { font-size: clamp(1.9rem, 7vw, 2.6rem); font-weight: 900; letter-spacing: -0.04em; }
 h3 { font-size: 1.15rem; }
 
 .contenitore { max-width: 1160px; margin: 0 auto; padding: 0 16px; }
+.contenitore.stretto { max-width: 820px; }
 .sezione { padding: 56px 0; }
+/* Le sezioni della home hanno un id (il menu ci salta): lo spazio evita che finiscano sotto la testata fissa. */
+section[id] { scroll-margin-top: 60px; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 .sezione-chiara { background: var(--carta); }
 .occhiello { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.78rem; font-weight: 700; color: var(--corallo); margin: 0 0 0.6em; }
 .introduzione { color: var(--tenue); font-size: 1.1rem; max-width: 640px; }
 
-/* Intestazione e piè di pagina */
-.testata { background: var(--carta); border-bottom: 1px solid var(--linea); position: sticky; top: 0; z-index: 10; }
-.testata-riga { display: flex; align-items: center; justify-content: space-between; min-height: 64px; gap: 16px; }
-.logo { font-weight: 800; font-size: 1.45rem; letter-spacing: -0.04em; color: var(--petrolio); text-decoration: none; margin: 0; }
+/* Intestazione: logo a sinistra, menu a destra */
+.testata { background: var(--sabbia); border-bottom: 1px solid var(--linea); position: sticky; top: 0; z-index: 20; }
+.testata-riga { display: flex; align-items: center; justify-content: space-between; min-height: 60px; gap: 16px; }
+.logo { font-weight: 900; font-size: 1.5rem; letter-spacing: -0.05em; color: var(--inchiostro); text-decoration: none; margin: 0; }
 .logo span { color: var(--corallo); }
-.menu { display: flex; gap: 20px; }
-.menu a { text-decoration: none; color: var(--inchiostro); font-weight: 600; }
-.menu a:hover { color: var(--petrolio); }
-.piede { background: var(--petrolio-scuro); color: #d8e6e3; padding: 48px 0; margin-top: 40px; }
+.solo-lettori { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Menu sul telefono: il pulsante ☰ (tre righe disegnate con il CSS) apre un pannello sotto la testata. */
+.menu-pulsante { width: 48px; height: 48px; margin-right: -10px; border: 0; background: transparent; display: grid; place-items: center; cursor: pointer; }
+.menu-icona, .menu-icona::before, .menu-icona::after { display: block; width: 24px; height: 2px; border-radius: 2px; background: var(--inchiostro); transition: transform 0.2s, background 0.2s; }
+.menu-icona { position: relative; }
+.menu-icona::before, .menu-icona::after { content: ""; position: absolute; left: 0; }
+.menu-icona::before { top: -7px; }
+.menu-icona::after { top: 7px; }
+/* Da aperto le tre righe diventano una X. */
+.menu-pulsante[aria-expanded="true"] .menu-icona { background: transparent; }
+.menu-pulsante[aria-expanded="true"] .menu-icona::before { transform: translateY(7px) rotate(45deg); }
+.menu-pulsante[aria-expanded="true"] .menu-icona::after { transform: translateY(-7px) rotate(-45deg); }
+.menu-voci { display: none; list-style: none; margin: 0; padding: 8px 16px 20px; position: absolute; left: 0; right: 0; top: 100%; background: var(--sabbia); border-bottom: 1px solid var(--linea); box-shadow: 0 16px 24px rgb(23 34 31 / 10%); }
+.menu-voci.aperto { display: block; }
+.menu-voci a { display: block; padding: 14px 0; font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em; color: var(--inchiostro); text-decoration: none; border-bottom: 1px solid var(--linea); }
+/* Sullo schermo largo le voci stanno in fila e il pulsante non serve. */
+@media (min-width: 900px) {
+  .menu-pulsante { display: none; }
+  .menu-voci { display: flex; gap: 22px; position: static; padding: 0; background: none; border: 0; box-shadow: none; }
+  .menu-voci a { font-size: 0.95rem; font-weight: 600; padding: 0; border: 0; }
+  .menu-voci a:hover { color: var(--corallo); }
+}
+
+/* Piè di pagina */
+.piede { background: var(--notte); color: #c9d9d6; padding: 48px 0 calc(48px + env(safe-area-inset-bottom)); }
 .piede .logo { color: #fff; }
-.piede a { color: #d8e6e3; display: block; text-decoration: none; margin-bottom: 6px; }
-.piede-griglia { display: grid; gap: 32px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-.piede-titolo { font-weight: 700; color: #fff; margin-top: 0; }
+.piede-menu { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 20px 0 28px; }
+.piede-menu a { color: #fff; text-decoration: none; font-weight: 600; }
+.piede .contatti { justify-content: flex-start; }
+.piede .segnaposto { color: #c9d9d6; border-color: rgb(255 255 255 / 25%); }
+.piede .pulsante-secondario { color: #fff; box-shadow: inset 0 0 0 2px rgb(255 255 255 / 50%); }
 
 /* Pulsanti */
 .pulsante {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-height: 48px; padding: 0 22px; border-radius: 999px; border: 0;
-  background: var(--corallo); color: #fff; font: inherit; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center;
+  min-height: 52px; padding: 0 26px; border-radius: 999px; border: 0;
+  background: var(--corallo); color: #fff; font: inherit; font-weight: 800;
   text-decoration: none; cursor: pointer;
 }
 .pulsante:hover { background: var(--corallo-scuro); }
 .pulsante:disabled { opacity: 0.6; cursor: wait; }
-.pulsante-secondario { background: transparent; color: var(--petrolio); box-shadow: inset 0 0 0 2px var(--petrolio); }
-.pulsante-secondario:hover { background: var(--petrolio-chiaro); }
+.pulsante-secondario { background: transparent; color: var(--inchiostro); box-shadow: inset 0 0 0 2px var(--inchiostro); }
+.pulsante-secondario:hover { background: rgb(23 34 31 / 6%); }
 
-/* Home: apertura */
-.apertura { background: var(--petrolio); color: #fff; padding: 72px 0 88px; }
-.apertura h1 { max-width: 760px; }
+/* Home: apertura. Sul telefono riempie quasi tutto lo schermo, con il testo in basso. */
+.apertura {
+  position: relative; overflow: hidden; color: #fff; display: flex; align-items: flex-end;
+  min-height: min(82svh, 760px); padding: 48px 0 40px;
+  background: radial-gradient(120% 90% at 85% 10%, #1d7a72 0%, var(--petrolio) 45%, var(--notte) 100%);
+}
+.apertura img.sfondo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* Sfumatura scura sopra la foto: il testo bianco si legge su qualunque immagine. */
+.apertura.con-foto::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgb(0 0 0 / 75%), rgb(0 0 0 / 15%) 70%); }
+.apertura .contenitore { position: relative; z-index: 1; width: 100%; }
+.apertura .occhiello { color: #ffc9b8; }
+.apertura h1 { font-size: clamp(2.8rem, 12vw, 5.5rem); font-weight: 900; letter-spacing: -0.045em; line-height: 0.98; max-width: 11ch; }
 .apertura h1 em { font-style: normal; color: #ffc9b8; }
-.apertura p { font-size: 1.15rem; max-width: 560px; color: #d8e6e3; }
-.ricerca {
-  margin-top: 28px; background: var(--carta); border-radius: var(--raggio); padding: 12px;
-  display: flex; flex-wrap: wrap; gap: 10px; max-width: 720px; box-shadow: var(--ombra);
-}
-.ricerca label { flex: 1 1 200px; display: flex; flex-direction: column; color: var(--tenue); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 8px; }
-.ricerca select { font: inherit; font-size: 1rem; border: 0; padding: 6px 0; color: var(--inchiostro); background: transparent; text-transform: none; letter-spacing: 0; font-weight: 500; }
-.ricerca .pulsante { flex: 1 1 140px; }
-.vantaggi { display: flex; flex-wrap: wrap; gap: 10px 24px; margin-top: 24px; padding: 0; list-style: none; color: #d8e6e3; }
-.vantaggi li::before { content: "✓ "; color: #ffc9b8; font-weight: 700; }
+.apertura p { font-size: 1.1rem; max-width: 520px; color: rgb(255 255 255 / 88%); margin: 0 0 24px; }
 
-/* Stili di viaggio */
-.stili { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
-.stile {
-  display: flex; flex-direction: column; justify-content: flex-end; min-height: 120px; padding: 16px;
-  border-radius: var(--raggio); color: #fff; text-decoration: none; font-weight: 700; font-size: 1.1rem;
+/* Prossimo viaggio */
+.prossimo { background: var(--carta); border-radius: 22px; overflow: hidden; box-shadow: var(--ombra); }
+.prossimo .copertina { aspect-ratio: 4 / 3; }
+.prossimo .copertina-segnaposto { font-size: clamp(2.4rem, 11vw, 4rem); }
+.prossimo-corpo { padding: 20px 20px 24px; }
+.prossimo-date { margin: 0 0 4px; font-weight: 800; color: var(--corallo); }
+.prossimo h2 { font-size: clamp(1.8rem, 7vw, 2.6rem); font-weight: 900; letter-spacing: -0.035em; margin-bottom: 8px; }
+.prossimo-sotto { color: var(--tenue); margin: 0 0 14px; font-size: 1.05rem; }
+.prossimo-dati { list-style: none; padding: 0; margin: 0 0 18px; display: flex; flex-wrap: wrap; gap: 8px; }
+.prossimo-dati li { background: var(--sabbia); border: 1px solid var(--linea); border-radius: 999px; padding: 4px 12px; font-size: 0.9rem; font-weight: 600; }
+.prossimo-prezzo { font-size: 2rem; font-weight: 900; letter-spacing: -0.03em; margin: 0 0 16px; line-height: 1.1; }
+.prossimo-prezzo small { display: block; font-size: 0.9rem; font-weight: 500; letter-spacing: 0; color: var(--tenue); }
+.prossimo-azioni { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.piccolo { font-size: 0.9rem; color: var(--tenue); margin: 0; }
+@media (min-width: 760px) {
+  .prossimo { display: grid; grid-template-columns: 1.1fr 1fr; }
+  .prossimo .copertina { aspect-ratio: auto; min-height: 100%; }
+  .prossimo-corpo { padding: 32px; }
+  .prossimo-azioni { flex-direction: row; flex-wrap: wrap; }
 }
-.stile small { font-weight: 400; opacity: 0.9; }
+.piu-avanti { margin-top: 28px; }
+.piu-avanti h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--tenue); }
+.piu-avanti ul { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--linea); }
+.piu-avanti a { display: flex; justify-content: space-between; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--linea); color: var(--inchiostro); text-decoration: none; }
+.piu-avanti a span { color: var(--tenue); white-space: nowrap; }
+
+/* Cosa facciamo: sezione scura con quattro riquadri colorati */
+.sezione-scura { background: var(--notte); color: #fff; }
+.sezione-scura .occhiello { color: #ffc9b8; }
+.sezione-scura .introduzione { color: #c9d9d6; }
+.attivita { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 640px) { .attivita { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1040px) { .attivita { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.attivita li { border-radius: 20px; padding: 22px 20px; min-height: 180px; display: flex; flex-direction: column; }
+.attivita h3 { font-size: 1.9rem; font-weight: 900; letter-spacing: -0.04em; margin: auto 0 6px; }
+.attivita p { margin: 0; opacity: 0.9; }
+.attivita-durata { align-self: flex-start; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 999px; background: rgb(255 255 255 / 18%); margin-bottom: 20px; }
+.attivita-1 { background: var(--corallo); }
+.attivita-2 { background: #1d7a72; }
+.attivita-3 { background: #f2c14e; color: var(--inchiostro); }
+.attivita-3 .attivita-durata { background: rgb(0 0 0 / 10%); }
+.attivita-4 { background: #e9e2d6; color: var(--inchiostro); }
+.attivita-4 .attivita-durata { background: rgb(0 0 0 / 8%); }
+
+/* Viaggi passati: sul telefono una fila che scorre di lato, con le tessere che "si agganciano". */
+.passati {
+  list-style: none; padding: 4px 16px 12px; margin: 20px -16px 0; display: grid; gap: 12px;
+  grid-auto-flow: column; grid-auto-columns: 72%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+}
+.passati::-webkit-scrollbar { display: none; }
+.passato { scroll-snap-align: start; background: var(--carta); border-radius: 18px; overflow: hidden; box-shadow: var(--ombra); }
+.passato .copertina { aspect-ratio: 4 / 5; }
+.passato-testo { padding: 12px 14px 14px; display: flex; flex-direction: column; }
+.passato-testo span { color: var(--tenue); font-size: 0.9rem; }
+@media (min-width: 760px) {
+  .passati { grid-auto-flow: row; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); overflow: visible; margin: 20px 0 0; padding: 0; }
+}
+
+/* Chiusura e contatti */
+.centrato { text-align: center; }
+.centrato .introduzione { margin-left: auto; margin-right: auto; }
+.chiusura { padding: 64px 0 72px; }
+.chiusura h2 { font-size: clamp(2rem, 8vw, 3rem); font-weight: 900; letter-spacing: -0.04em; }
+.contatti { list-style: none; padding: 0; margin: 24px 0 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.segnaposto { display: inline-flex; align-items: center; min-height: 52px; padding: 0 18px; border-radius: 999px; border: 2px dashed var(--linea); color: var(--tenue); font-weight: 600; }
+
+/* Barra fissa "Prenota" nella pagina di un viaggio, solo sul telefono */
+.barra-prenota {
+  position: sticky; bottom: 0; z-index: 15; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: var(--carta); border-top: 1px solid var(--linea);
+  box-shadow: 0 -8px 24px rgb(23 34 31 / 8%);
+}
+.barra-prenota span { display: flex; flex-direction: column; font-weight: 900; font-size: 1.25rem; line-height: 1.15; }
+.barra-prenota small { font-size: 0.8rem; font-weight: 500; color: var(--tenue); }
+@media (min-width: 960px) { .barra-prenota { display: none; } }
 
 /* Colori per stile: usati nelle tessere e nelle copertine senza foto */
 .c-avventura { background: #b4532a; }
@@ -93,20 +193,11 @@ h3 { font-size: 1.15rem; }
 .c-on-the-road { background: #8a6a1f; }
 .c-generico { background: var(--petrolio); }
 
-/* Schede dei viaggi */
-.griglia-viaggi { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
-.scheda { background: var(--carta); border-radius: var(--raggio); overflow: hidden; box-shadow: var(--ombra); display: flex; flex-direction: column; text-decoration: none; color: inherit; transition: transform 0.15s; }
-.scheda:hover { transform: translateY(-3px); }
+/* Copertine (foto o riquadro colorato) */
 .copertina { position: relative; aspect-ratio: 16 / 10; overflow: hidden; }
 .copertina img { width: 100%; height: 100%; object-fit: cover; }
-.copertina-segnaposto { width: 100%; height: 100%; display: flex; align-items: flex-end; padding: 16px; color: rgb(255 255 255 / 92%); font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; }
+.copertina-segnaposto { width: 100%; height: 100%; display: flex; align-items: flex-end; padding: 16px; color: rgb(255 255 255 / 92%); font-size: 2rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1; }
 .copertina .etichetta { position: absolute; top: 12px; left: 12px; }
-.scheda-corpo { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
-.scheda-corpo h3 { margin: 0; }
-.scheda-meta { color: var(--tenue); font-size: 0.92rem; margin: 0; }
-.scheda-piede { margin-top: auto; padding-top: 10px; display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--linea); }
-.prezzo-da { font-size: 0.85rem; color: var(--tenue); }
-.prezzo-da strong { font-size: 1.3rem; color: var(--inchiostro); }
 
 /* Etichette di disponibilità */
 .etichetta { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: var(--carta); color: var(--inchiostro); }
@@ -116,19 +207,16 @@ h3 { font-size: 1.15rem; }
 .e-disponibile { background: var(--petrolio-chiaro); color: var(--petrolio-scuro); }
 .e-stile { background: rgb(255 255 255 / 18%); color: #fff; }
 
-/* Come funziona */
-.passi { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); counter-reset: passo; padding: 0; list-style: none; }
-.passi li { background: var(--carta); border-radius: var(--raggio); padding: 24px; box-shadow: var(--ombra); counter-increment: passo; }
-.passi li::before { content: counter(passo); display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--corallo); color: #fff; font-weight: 800; margin-bottom: 12px; }
-.domande details { background: var(--carta); border-radius: 10px; padding: 16px 18px; margin-bottom: 10px; box-shadow: var(--ombra); }
-.domande summary { font-weight: 700; cursor: pointer; }
+/* Domande frequenti: si aprono e chiudono toccandole (<details>) */
+.domande details { border-bottom: 1px solid var(--linea); padding: 18px 0; }
+.domande details:first-child { border-top: 1px solid var(--linea); }
+.domande summary { font-weight: 800; font-size: 1.08rem; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+.domande summary::-webkit-details-marker { display: none; }
+.domande summary::after { content: "+"; font-size: 1.5rem; line-height: 1; color: var(--corallo); transition: transform 0.2s; }
+.domande details[open] summary::after { transform: rotate(45deg); }
 .domande details p { margin: 10px 0 0; color: var(--tenue); }
-
-/* Catalogo */
-.filtri { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; background: var(--carta); padding: 16px; border-radius: var(--raggio); box-shadow: var(--ombra); margin-bottom: 24px; }
-.filtri label { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; font-weight: 600; flex: 1 1 160px; }
-.filtri select { font: inherit; padding: 10px; border-radius: 8px; border: 1px solid var(--linea); background: #fff; }
-.vuoto { background: var(--carta); padding: 32px; border-radius: var(--raggio); text-align: center; color: var(--tenue); }
+.vuoto { background: var(--carta); padding: 32px 20px; border-radius: var(--raggio); text-align: center; color: var(--tenue); }
+.vuoto h2 { color: var(--inchiostro); }
 
 /* Pagina del viaggio */
 .testa-viaggio { color: #fff; padding: 64px 0 40px; position: relative; overflow: hidden; }

@@ -139,6 +139,42 @@ if (esistenti.length > 0) {
         { tra: 230, prezzo: 79000, acconto: 15000, posti: 16, minimo: 8, coordinatore: "Luca" },
       ],
     },
+    // Due viaggi già fatti (partenze nel passato): riempiono la sezione "Viaggi passati" del sito.
+    {
+      titolo: "Weekend sulle Dolomiti",
+      sottotitolo: "Tre giorni tra rifugi, laghi e tramonti sulle Tre Cime",
+      destinazione: "Dolomiti",
+      durataGiorni: 3,
+      stili: ["natura", "avventura"],
+      livello: "medio",
+      fasciaEta: "20–35 anni",
+      descrizione: "Un weekend lungo in montagna: giro delle Tre Cime, notte in rifugio e bagno (freddo) nel lago di Braies.",
+      incluso: ["2 notti in rifugio con mezza pensione", "Coordinatore"],
+      tappe: [
+        { giorno: 1, titolo: "Lago di Braies" },
+        { giorno: 2, titolo: "Giro delle Tre Cime" },
+        { giorno: 3, titolo: "Rientro" },
+      ],
+      partenze: [{ tra: -70, prezzo: 32000, acconto: 10000, posti: 14, minimo: 6, coordinatore: "Giulia" }],
+    },
+    {
+      titolo: "Lisbona e la costa",
+      sottotitolo: "Cinque giorni tra fado, tram gialli e onde di Ericeira",
+      destinazione: "Lisbona",
+      durataGiorni: 5,
+      stili: ["citta", "mare"],
+      livello: "facile",
+      fasciaEta: "20–35 anni",
+      descrizione: "Lisbona a piedi e in tram, una giornata a Sintra e una di surf a Ericeira, con le serate nei miradouro.",
+      incluso: ["4 notti in ostello, camere private", "Lezione di surf", "Coordinatore"],
+      tappe: [
+        { giorno: 1, titolo: "Arrivo a Lisbona" },
+        { giorno: 3, titolo: "Sintra" },
+        { giorno: 4, titolo: "Ericeira" },
+        { giorno: 5, titolo: "Partenza" },
+      ],
+      partenze: [{ tra: -160, prezzo: 59000, acconto: 15000, posti: 16, minimo: 8, coordinatore: "Luca" }],
+    },
   ];
 
   for (const { partenze, ...v } of viaggi) {
