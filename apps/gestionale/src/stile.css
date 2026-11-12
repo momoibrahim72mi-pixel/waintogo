@@ -21,7 +21,7 @@ a { color: var(--primario); }
 .intestazione { background: var(--carta); border-bottom: 1px solid var(--bordo); padding: 0.9rem 1.5rem; }
 .marchio { font-weight: 700; font-size: 1.15rem; text-decoration: none; color: var(--testo); }
 .marchio span { font-weight: 400; color: var(--tenue); }
-.contenuto { max-width: 1000px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+.contenuto { max-width: 1180px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
 
 .titolo-pagina { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
 h1 { font-size: 1.6rem; margin: 0.5rem 0 1rem; }
@@ -79,4 +79,69 @@ h2 { font-size: 1.1rem; margin: 0 0 1rem; }
 @media (max-width: 640px) {
   .griglia { grid-template-columns: minmax(0, 1fr); }
   .tappa { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Menu nell'intestazione */
+.intestazione { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
+.menu { display: flex; gap: 0.25rem; }
+.menu a { padding: 0.45rem 0.8rem; border-radius: 8px; text-decoration: none; color: var(--tenue); }
+.menu a.active { background: #e3efee; color: var(--primario); font-weight: 600; }
+
+/* Testo nascosto alla vista ma letto dai lettori di schermo */
+.solo-lettori { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+h3 { font-size: 1rem; margin: 1rem 0 0.75rem; }
+.testo-lungo { white-space: pre-line; }
+
+/* Pulsanti piccoli dentro le tabelle */
+.pulsante.piccolo { padding: 0.35rem 0.7rem; min-height: 36px; font-size: 0.875rem; }
+.azioni-riga { text-align: right; }
+.azioni-riga .pulsante { margin-left: 0.35rem; }
+/* La colonna con nome e contatti può andare a capo, così la tabella sta nella pagina */
+.tabella td.persona { white-space: normal; min-width: 15rem; }
+.tabella tr.spenta td { opacity: 0.55; }
+.tabella tr.dettaglio td { background: #fafbfc; white-space: normal; }
+
+/* Scelte multiple (stili del viaggio) */
+.scelte { border: none; padding: 0; margin: 0; }
+.scelte-righe { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; padding-top: 0.25rem; }
+.scelta { display: flex; align-items: center; gap: 0.4rem; min-height: 36px; }
+.campo select { font: inherit; padding: 0.55rem 0.7rem; border: 1px solid var(--bordo); border-radius: 8px; width: 100%; background: var(--carta); }
+
+/* Modulo dentro un riquadro (nuova partenza, nuovo iscritto, pagamento) */
+.sotto-modulo { border: 1px solid var(--bordo); border-radius: 10px; padding: 1rem; margin-bottom: 1rem; background: #fbfcfd; }
+.sotto-modulo h3 { margin-top: 0; }
+.sotto-modulo .azioni { margin-top: 1rem; }
+.griglia-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.griglia-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+/* Stati di iscrizioni e pagamenti */
+.iscr-richiesta { background: #fef0c7; color: #93370d; }
+.iscr-confermata { background: #dcf3e8; color: #05603a; }
+.iscr-lista_attesa { background: #e0eaff; color: #2b3f8f; }
+.iscr-annullata { background: #eef0f3; color: #5b6470; }
+.pag-da_pagare { background: #fdecea; color: var(--errore); }
+.pag-acconto_versato { background: #fef0c7; color: #93370d; }
+.pag-saldato { background: #dcf3e8; color: #05603a; }
+
+/* Pagina partenza: numeri in evidenza e dettaglio di un iscritto */
+.numeri { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; margin-bottom: 0.75rem; }
+.numero-grande { background: var(--carta); border: 1px solid var(--bordo); border-radius: 10px; padding: 0.9rem 1rem; display: flex; flex-direction: column; gap: 0.2rem; }
+.numero-grande strong { font-size: 1.4rem; font-variant-numeric: tabular-nums; }
+.dettaglio-iscritto { padding: 0.25rem 0 0.5rem; }
+.elenco-pagamenti { list-style: none; padding: 0; margin: 0 0 1rem; }
+.elenco-pagamenti li { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.4rem 0; border-bottom: 1px dashed var(--bordo); }
+
+/* Cruscotto */
+.griglia-da-fare { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.da-fare ul { list-style: none; padding: 0; margin: 0; }
+.da-fare li { padding: 0.55rem 0; border-top: 1px solid var(--bordo); }
+.conteggio { display: inline-block; min-width: 1.6rem; padding: 0 0.45rem; border-radius: 999px; background: #e3efee; color: var(--primario); font-size: 0.85rem; text-align: center; }
+
+@media (max-width: 900px) {
+  .griglia-3, .griglia-4, .griglia-da-fare { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .numeri { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .griglia-3, .griglia-4, .griglia-da-fare { grid-template-columns: minmax(0, 1fr); }
 }

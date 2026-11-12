@@ -1,0 +1,616 @@
+{
+  "id": "afaa3ecd-11b8-431b-b2c5-85c38bb48885",
+  "prevId": "a589ced3-6f4e-4ac4-b975-c5a91986de85",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.iscrizioni": {
+      "name": "iscrizioni",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "creato_il": {
+          "name": "creato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "aggiornato_il": {
+          "name": "aggiornato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "codice": {
+          "name": "codice",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "partenza_id": {
+          "name": "partenza_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stato": {
+          "name": "stato",
+          "type": "stato_iscrizione",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'richiesta'"
+        },
+        "nome": {
+          "name": "nome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cognome": {
+          "name": "cognome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "telefono": {
+          "name": "telefono",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data_nascita": {
+          "name": "data_nascita",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "note": {
+          "name": "note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        }
+      },
+      "indexes": {
+        "iscrizioni_partenza_idx": {
+          "name": "iscrizioni_partenza_idx",
+          "columns": [
+            {
+              "expression": "partenza_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "iscrizioni_partenza_id_partenze_id_fk": {
+          "name": "iscrizioni_partenza_id_partenze_id_fk",
+          "tableFrom": "iscrizioni",
+          "tableTo": "partenze",
+          "columnsFrom": [
+            "partenza_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "iscrizioni_codice_unique": {
+          "name": "iscrizioni_codice_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "codice"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.pagamenti": {
+      "name": "pagamenti",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "creato_il": {
+          "name": "creato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "aggiornato_il": {
+          "name": "aggiornato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "iscrizione_id": {
+          "name": "iscrizione_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "importo_centesimi": {
+          "name": "importo_centesimi",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data": {
+          "name": "data",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metodo": {
+          "name": "metodo",
+          "type": "metodo_pagamento",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nota": {
+          "name": "nota",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pagamenti_iscrizione_id_iscrizioni_id_fk": {
+          "name": "pagamenti_iscrizione_id_iscrizioni_id_fk",
+          "tableFrom": "pagamenti",
+          "tableTo": "iscrizioni",
+          "columnsFrom": [
+            "iscrizione_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.partenze": {
+      "name": "partenze",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "creato_il": {
+          "name": "creato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "aggiornato_il": {
+          "name": "aggiornato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "viaggio_id": {
+          "name": "viaggio_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data_inizio": {
+          "name": "data_inizio",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "prezzo_centesimi": {
+          "name": "prezzo_centesimi",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "acconto_centesimi": {
+          "name": "acconto_centesimi",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "posti_totali": {
+          "name": "posti_totali",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "minimo_partecipanti": {
+          "name": "minimo_partecipanti",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "coordinatore": {
+          "name": "coordinatore",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "annullata": {
+          "name": "annullata",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {
+        "partenze_data_inizio_idx": {
+          "name": "partenze_data_inizio_idx",
+          "columns": [
+            {
+              "expression": "data_inizio",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "partenze_viaggio_id_viaggi_id_fk": {
+          "name": "partenze_viaggio_id_viaggi_id_fk",
+          "tableFrom": "partenze",
+          "tableTo": "viaggi",
+          "columnsFrom": [
+            "viaggio_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.tappe_itinerario": {
+      "name": "tappe_itinerario",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "creato_il": {
+          "name": "creato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "aggiornato_il": {
+          "name": "aggiornato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "viaggio_id": {
+          "name": "viaggio_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "giorno": {
+          "name": "giorno",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "titolo": {
+          "name": "titolo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descrizione": {
+          "name": "descrizione",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "tappe_itinerario_viaggio_id_viaggi_id_fk": {
+          "name": "tappe_itinerario_viaggio_id_viaggi_id_fk",
+          "tableFrom": "tappe_itinerario",
+          "tableTo": "viaggi",
+          "columnsFrom": [
+            "viaggio_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "tappa_giorno_unico": {
+          "name": "tappa_giorno_unico",
+          "nullsNotDistinct": false,
+          "columns": [
+            "viaggio_id",
+            "giorno"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.viaggi": {
+      "name": "viaggi",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "creato_il": {
+          "name": "creato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "aggiornato_il": {
+          "name": "aggiornato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "titolo": {
+          "name": "titolo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sottotitolo": {
+          "name": "sottotitolo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "destinazione": {
+          "name": "destinazione",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descrizione": {
+          "name": "descrizione",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "durata_giorni": {
+          "name": "durata_giorni",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stili": {
+          "name": "stili",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'"
+        },
+        "livello": {
+          "name": "livello",
+          "type": "livello_viaggio",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'medio'"
+        },
+        "fascia_eta": {
+          "name": "fascia_eta",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "punti_forti": {
+          "name": "punti_forti",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'"
+        },
+        "incluso": {
+          "name": "incluso",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'"
+        },
+        "non_incluso": {
+          "name": "non_incluso",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'"
+        },
+        "info_utili": {
+          "name": "info_utili",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "immagine_url": {
+          "name": "immagine_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "stato": {
+          "name": "stato",
+          "type": "stato_viaggio",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'bozza'"
+        },
+        "istruzioni_pagamento": {
+          "name": "istruzioni_pagamento",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "viaggi_slug_unique": {
+          "name": "viaggi_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.livello_viaggio": {
+      "name": "livello_viaggio",
+      "schema": "public",
+      "values": [
+        "facile",
+        "medio",
+        "impegnativo"
+      ]
+    },
+    "public.metodo_pagamento": {
+      "name": "metodo_pagamento",
+      "schema": "public",
+      "values": [
+        "bonifico",
+        "revolut",
+        "contanti",
+        "altro"
+      ]
+    },
+    "public.stato_iscrizione": {
+      "name": "stato_iscrizione",
+      "schema": "public",
+      "values": [
+        "richiesta",
+        "confermata",
+        "lista_attesa",
+        "annullata"
+      ]
+    },
+    "public.stato_viaggio": {
+      "name": "stato_viaggio",
+      "schema": "public",
+      "values": [
+        "bozza",
+        "pubblicato",
+        "chiuso"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

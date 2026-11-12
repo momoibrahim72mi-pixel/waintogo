@@ -1,15 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { euroInCentesimi, formattaEuro, problemiPerPubblicare, viaggioInputSchema } from "./index.js";
+import {
+  aggiungiGiorni,
+  disponibilita,
+  euroInCentesimi,
+  formattaEuro,
+  iscrizionePubblicaSchema,
+  partenzaInputSchema,
+  problemiPerPubblicare,
+  statoPagamento,
+  viaggioInputSchema,
+} from "./index.js";
 
-const base = {
-  titolo: "Islanda in agosto",
-  destinazione: "Islanda",
-  dataInizio: "2027-08-01",
-  dataFine: "2027-08-08",
-  prezzoCentesimi: 129000,
-  accontoCentesimi: 30000,
-  postiTotali: 14,
-};
+const base = { titolo: "Islanda on the road", destinazione: "Islanda", durataGiorni: 8 };
 
 describe("euro e centesimi", () => {
   it("legge gli importi scritti all'italiana", () => {
@@ -25,19 +27,12 @@ describe("euro e centesimi", () => {
   });
 });
 
-describe("validità di un viaggio", () => {
-  it("accetta un viaggio valido e mette i valori predefiniti", () => {
-    const r = viaggioInputSchema.parse(base);
+describe("viaggio", () => {
+  it("accetta un viaggio valido, mette i valori predefiniti e scarta le righe vuote", () => {
+    const r = viaggioInputSchema.parse({ ...base, incluso: ["Alloggi", " ", ""] });
     expect(r.tappe).toEqual([]);
-    expect(r.descrizione).toBe("");
-  });
-
-  it("rifiuta la fine prima dell'inizio e l'acconto più alto del prezzo", () => {
-    const r = viaggioInputSchema.safeParse({ ...base, dataFine: "2027-07-01", accontoCentesimi: 999999 });
-    expect(r.success).toBe(false);
-    const campi = r.error!.issues.map((i) => i.path.join("."));
-    expect(campi).toContain("dataFine");
-    expect(campi).toContain("accontoCentesimi");
+    expect(r.livello).toBe("medio");
+    expect(r.incluso).toEqual(["Alloggi"]);
   });
 
   it("rifiuta giorni ripetuti o oltre la durata", () => {
@@ -49,19 +44,70 @@ describe("validità di un viaggio", () => {
         { giorno: 9, titolo: "Troppo tardi" },
       ],
     });
-    expect(r.success).toBe(false);
     expect(r.error!.issues.map((i) => i.message)).toEqual(["Il giorno 1 è ripetuto", "Il viaggio dura 8 giorni"]);
   });
 
+  it("accetta solo immagini https", () => {
+    expect(viaggioInputSchema.safeParse({ ...base, immagineUrl: "http://x.it/a.jpg" }).success).toBe(false);
+    expect(viaggioInputSchema.safeParse({ ...base, immagineUrl: "https://x.it/a.jpg" }).success).toBe(true);
+  });
+
   it("dice cosa manca per pubblicare", () => {
-    const v = viaggioInputSchema.parse(base);
-    expect(problemiPerPubblicare(v, "2026-11-09")).toHaveLength(3);
+    expect(problemiPerPubblicare(viaggioInputSchema.parse(base))).toHaveLength(5);
     const completo = viaggioInputSchema.parse({
       ...base,
       descrizione: "Una settimana tra ghiacciai e cascate.",
-      istruzioniPagamento: "IBAN IT00 X000 0000 0000 0000 0000 000",
+      stili: ["on-the-road"],
+      incluso: ["Alloggi"],
+      istruzioniPagamento: "IBAN IT00 X000",
       tappe: [{ giorno: 1, titolo: "Arrivo a Reykjavik" }],
     });
-    expect(problemiPerPubblicare(completo, "2026-11-09")).toEqual([]);
+    expect(problemiPerPubblicare(completo)).toEqual([]);
+  });
+
+  it("calcola le date", () => {
+    expect(aggiungiGiorni("2027-02-27", 7)).toBe("2027-03-06");
+  });
+});
+
+describe("partenza", () => {
+  it("rifiuta acconto più alto del prezzo e minimo più alto dei posti", () => {
+    const r = partenzaInputSchema.safeParse({
+      dataInizio: "2027-08-01",
+      prezzoCentesimi: 1000,
+      accontoCentesimi: 2000,
+      postiTotali: 10,
+      minimoPartecipanti: 11,
+    });
+    expect(r.error!.issues.map((i) => i.path.join("."))).toEqual(["accontoCentesimi", "minimoPartecipanti"]);
+  });
+
+  it("sceglie l'etichetta giusta per il sito", () => {
+    expect(disponibilita({ postiLiberi: 0, garantita: true }).tipo).toBe("completo");
+    expect(disponibilita({ postiLiberi: 1, garantita: false }).testo).toBe("Ultimo posto");
+    expect(disponibilita({ postiLiberi: 3, garantita: false }).testo).toBe("Ultimi 3 posti");
+    expect(disponibilita({ postiLiberi: 8, garantita: true }).tipo).toBe("garantita");
+    expect(disponibilita({ postiLiberi: 8, garantita: false }).testo).toBe("8 posti disponibili");
+  });
+});
+
+describe("iscrizione e pagamenti", () => {
+  it("vuole il consenso privacy e un'email valida", () => {
+    const r = iscrizionePubblicaSchema.safeParse({
+      partenzaId: crypto.randomUUID(),
+      nome: "Anna",
+      cognome: "Rossi",
+      email: "non-una-email",
+      telefono: "+39 333 1234567",
+      privacy: false,
+    });
+    expect(r.error!.issues.map((i) => i.path.join("."))).toEqual(["email", "privacy"]);
+  });
+
+  it("calcola lo stato del pagamento", () => {
+    expect(statoPagamento(0, 129000, 30000)).toBe("da_pagare");
+    expect(statoPagamento(20000, 129000, 30000)).toBe("da_pagare");
+    expect(statoPagamento(30000, 129000, 30000)).toBe("acconto_versato");
+    expect(statoPagamento(129000, 129000, 30000)).toBe("saldato");
   });
 });

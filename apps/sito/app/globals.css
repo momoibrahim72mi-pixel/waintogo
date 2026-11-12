@@ -1,0 +1,184 @@
+/* Stile del sito pubblico. Pensato prima per il telefono, poi si allarga.
+   I colori sono "variabili": per cambiare il look basta toccarli qui. */
+:root {
+  --sabbia: #fbf7f1;        /* sfondo */
+  --carta: #ffffff;
+  --inchiostro: #17221f;    /* testo */
+  --tenue: #56635f;         /* testo secondario */
+  --linea: #e7e0d5;
+  --petrolio: #0f5e5a;      /* colore principale */
+  --petrolio-scuro: #0a4441;
+  --petrolio-chiaro: #e3f0ee;
+  --corallo: #d9502e;       /* pulsanti e richiami */
+  --corallo-scuro: #b53f21;
+  --ocra: #9a6a00;
+  --raggio: 14px;
+  --ombra: 0 1px 2px rgb(23 34 31 / 6%), 0 8px 24px rgb(23 34 31 / 6%);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--inchiostro);
+  background: var(--sabbia);
+  line-height: 1.55;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+img { max-width: 100%; display: block; }
+a { color: var(--petrolio); }
+h1, h2, h3 { line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 0.5em; }
+h1 { font-size: clamp(2rem, 6vw, 3.4rem); }
+h2 { font-size: clamp(1.5rem, 4vw, 2.1rem); }
+h3 { font-size: 1.15rem; }
+
+.contenitore { max-width: 1160px; margin: 0 auto; padding: 0 16px; }
+.sezione { padding: 56px 0; }
+.sezione-chiara { background: var(--carta); }
+.occhiello { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.78rem; font-weight: 700; color: var(--corallo); margin: 0 0 0.6em; }
+.introduzione { color: var(--tenue); font-size: 1.1rem; max-width: 640px; }
+
+/* Intestazione e piè di pagina */
+.testata { background: var(--carta); border-bottom: 1px solid var(--linea); position: sticky; top: 0; z-index: 10; }
+.testata-riga { display: flex; align-items: center; justify-content: space-between; min-height: 64px; gap: 16px; }
+.logo { font-weight: 800; font-size: 1.45rem; letter-spacing: -0.04em; color: var(--petrolio); text-decoration: none; margin: 0; }
+.logo span { color: var(--corallo); }
+.menu { display: flex; gap: 20px; }
+.menu a { text-decoration: none; color: var(--inchiostro); font-weight: 600; }
+.menu a:hover { color: var(--petrolio); }
+.piede { background: var(--petrolio-scuro); color: #d8e6e3; padding: 48px 0; margin-top: 40px; }
+.piede .logo { color: #fff; }
+.piede a { color: #d8e6e3; display: block; text-decoration: none; margin-bottom: 6px; }
+.piede-griglia { display: grid; gap: 32px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.piede-titolo { font-weight: 700; color: #fff; margin-top: 0; }
+
+/* Pulsanti */
+.pulsante {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 0 22px; border-radius: 999px; border: 0;
+  background: var(--corallo); color: #fff; font: inherit; font-weight: 700;
+  text-decoration: none; cursor: pointer;
+}
+.pulsante:hover { background: var(--corallo-scuro); }
+.pulsante:disabled { opacity: 0.6; cursor: wait; }
+.pulsante-secondario { background: transparent; color: var(--petrolio); box-shadow: inset 0 0 0 2px var(--petrolio); }
+.pulsante-secondario:hover { background: var(--petrolio-chiaro); }
+
+/* Home: apertura */
+.apertura { background: var(--petrolio); color: #fff; padding: 72px 0 88px; }
+.apertura h1 { max-width: 760px; }
+.apertura h1 em { font-style: normal; color: #ffc9b8; }
+.apertura p { font-size: 1.15rem; max-width: 560px; color: #d8e6e3; }
+.ricerca {
+  margin-top: 28px; background: var(--carta); border-radius: var(--raggio); padding: 12px;
+  display: flex; flex-wrap: wrap; gap: 10px; max-width: 720px; box-shadow: var(--ombra);
+}
+.ricerca label { flex: 1 1 200px; display: flex; flex-direction: column; color: var(--tenue); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 8px; }
+.ricerca select { font: inherit; font-size: 1rem; border: 0; padding: 6px 0; color: var(--inchiostro); background: transparent; text-transform: none; letter-spacing: 0; font-weight: 500; }
+.ricerca .pulsante { flex: 1 1 140px; }
+.vantaggi { display: flex; flex-wrap: wrap; gap: 10px 24px; margin-top: 24px; padding: 0; list-style: none; color: #d8e6e3; }
+.vantaggi li::before { content: "✓ "; color: #ffc9b8; font-weight: 700; }
+
+/* Stili di viaggio */
+.stili { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+.stile {
+  display: flex; flex-direction: column; justify-content: flex-end; min-height: 120px; padding: 16px;
+  border-radius: var(--raggio); color: #fff; text-decoration: none; font-weight: 700; font-size: 1.1rem;
+}
+.stile small { font-weight: 400; opacity: 0.9; }
+
+/* Colori per stile: usati nelle tessere e nelle copertine senza foto */
+.c-avventura { background: #b4532a; }
+.c-natura { background: #2f6b3f; }
+.c-citta { background: #3b3f6b; }
+.c-mare { background: #1c6a8c; }
+.c-cultura { background: #7a3b62; }
+.c-on-the-road { background: #8a6a1f; }
+.c-generico { background: var(--petrolio); }
+
+/* Schede dei viaggi */
+.griglia-viaggi { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.scheda { background: var(--carta); border-radius: var(--raggio); overflow: hidden; box-shadow: var(--ombra); display: flex; flex-direction: column; text-decoration: none; color: inherit; transition: transform 0.15s; }
+.scheda:hover { transform: translateY(-3px); }
+.copertina { position: relative; aspect-ratio: 16 / 10; overflow: hidden; }
+.copertina img { width: 100%; height: 100%; object-fit: cover; }
+.copertina-segnaposto { width: 100%; height: 100%; display: flex; align-items: flex-end; padding: 16px; color: rgb(255 255 255 / 92%); font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; }
+.copertina .etichetta { position: absolute; top: 12px; left: 12px; }
+.scheda-corpo { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.scheda-corpo h3 { margin: 0; }
+.scheda-meta { color: var(--tenue); font-size: 0.92rem; margin: 0; }
+.scheda-piede { margin-top: auto; padding-top: 10px; display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--linea); }
+.prezzo-da { font-size: 0.85rem; color: var(--tenue); }
+.prezzo-da strong { font-size: 1.3rem; color: var(--inchiostro); }
+
+/* Etichette di disponibilità */
+.etichetta { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: var(--carta); color: var(--inchiostro); }
+.e-garantita { background: #dff3e7; color: #135c32; }
+.e-ultimi { background: #fff0d6; color: #7a4d00; }
+.e-completo { background: #f1e3e3; color: #8a2a2a; }
+.e-disponibile { background: var(--petrolio-chiaro); color: var(--petrolio-scuro); }
+.e-stile { background: rgb(255 255 255 / 18%); color: #fff; }
+
+/* Come funziona */
+.passi { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); counter-reset: passo; padding: 0; list-style: none; }
+.passi li { background: var(--carta); border-radius: var(--raggio); padding: 24px; box-shadow: var(--ombra); counter-increment: passo; }
+.passi li::before { content: counter(passo); display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--corallo); color: #fff; font-weight: 800; margin-bottom: 12px; }
+.domande details { background: var(--carta); border-radius: 10px; padding: 16px 18px; margin-bottom: 10px; box-shadow: var(--ombra); }
+.domande summary { font-weight: 700; cursor: pointer; }
+.domande details p { margin: 10px 0 0; color: var(--tenue); }
+
+/* Catalogo */
+.filtri { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; background: var(--carta); padding: 16px; border-radius: var(--raggio); box-shadow: var(--ombra); margin-bottom: 24px; }
+.filtri label { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; font-weight: 600; flex: 1 1 160px; }
+.filtri select { font: inherit; padding: 10px; border-radius: 8px; border: 1px solid var(--linea); background: #fff; }
+.vuoto { background: var(--carta); padding: 32px; border-radius: var(--raggio); text-align: center; color: var(--tenue); }
+
+/* Pagina del viaggio */
+.testa-viaggio { color: #fff; padding: 64px 0 40px; position: relative; overflow: hidden; }
+.testa-viaggio img.sfondo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.testa-viaggio::after { content: ""; position: absolute; inset: 0; background: rgb(0 0 0 / 40%); }
+.testa-viaggio .contenitore { position: relative; z-index: 1; }
+.testa-viaggio p { font-size: 1.15rem; max-width: 640px; }
+.etichette { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.layout-viaggio { display: grid; gap: 32px; grid-template-columns: minmax(0, 1fr); padding-top: 32px; }
+@media (min-width: 960px) { .layout-viaggio { grid-template-columns: minmax(0, 1fr) 340px; } }
+.in-breve { background: var(--carta); border-radius: var(--raggio); padding: 20px; box-shadow: var(--ombra); align-self: start; }
+@media (min-width: 960px) { .in-breve { position: sticky; top: 84px; } }
+.in-breve dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin: 0 0 16px; }
+.in-breve dt { color: var(--tenue); }
+.in-breve dd { margin: 0; font-weight: 600; text-align: right; }
+.in-breve .pulsante { width: 100%; }
+.blocco { margin-bottom: 40px; }
+.punti-forti { padding: 0; list-style: none; display: grid; gap: 10px; }
+.punti-forti li { background: var(--petrolio-chiaro); padding: 12px 16px; border-radius: 10px; font-weight: 600; }
+.itinerario { list-style: none; padding: 0; border-left: 3px solid var(--linea); margin-left: 12px; }
+.itinerario li { position: relative; padding: 0 0 20px 24px; }
+.itinerario li::before { content: ""; position: absolute; left: -9px; top: 4px; width: 15px; height: 15px; border-radius: 50%; background: var(--corallo); border: 3px solid var(--sabbia); }
+.itinerario .giorno { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--corallo); }
+.itinerario p { margin: 4px 0 0; color: var(--tenue); }
+.inclusi { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.inclusi ul { padding-left: 0; list-style: none; }
+.inclusi li { padding: 6px 0; border-bottom: 1px solid var(--linea); }
+.si li::before { content: "✓ "; color: #1f7a46; font-weight: 700; }
+.no li::before { content: "✕ "; color: #a33; font-weight: 700; }
+.partenze { display: grid; gap: 12px; }
+.partenza { background: var(--carta); border-radius: 12px; padding: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; box-shadow: var(--ombra); }
+.partenza-date { font-weight: 700; font-size: 1.05rem; flex: 1 1 200px; }
+.partenza-date small { display: block; font-weight: 400; color: var(--tenue); font-size: 0.85rem; }
+.partenza-prezzo { font-size: 1.25rem; font-weight: 800; }
+.partenza-prezzo small { display: block; font-size: 0.8rem; font-weight: 400; color: var(--tenue); }
+.testo-lungo { white-space: pre-line; }
+
+/* Modulo di iscrizione */
+.modulo { background: var(--carta); border-radius: var(--raggio); padding: 24px; box-shadow: var(--ombra); display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.modulo .largo { grid-column: 1 / -1; }
+@media (max-width: 640px) { .modulo { grid-template-columns: minmax(0, 1fr); } }
+.campo { display: flex; flex-direction: column; gap: 6px; }
+.campo label { font-weight: 600; font-size: 0.92rem; }
+.campo input, .campo textarea, .campo select { font: inherit; padding: 12px; border: 1px solid #cfc6b8; border-radius: 10px; background: #fff; }
+.campo input:focus, .campo textarea:focus, .campo select:focus { outline: 3px solid var(--petrolio-chiaro); border-color: var(--petrolio); }
+.campo .errore { color: #a8261a; font-size: 0.88rem; }
+.campo [aria-invalid="true"] { border-color: #a8261a; }
+.consenso { display: flex; gap: 10px; align-items: flex-start; }
+.consenso input { width: 20px; height: 20px; margin-top: 3px; }
+.avviso { padding: 14px 16px; border-radius: 10px; background: #fdecea; color: #8a1f14; }
+.conferma { background: var(--carta); border-radius: var(--raggio); padding: 28px; box-shadow: var(--ombra); max-width: 720px; }
+.codice { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 1.6rem; font-weight: 800; letter-spacing: 0.08em; background: var(--petrolio-chiaro); color: var(--petrolio-scuro); padding: 8px 14px; border-radius: 10px; display: inline-block; }
+.istruzioni { background: var(--sabbia); border: 1px dashed #cfc6b8; padding: 16px; border-radius: 10px; white-space: pre-line; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.95rem; }

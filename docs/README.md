@@ -5,6 +5,7 @@ La documentazione si aggiorna **a ogni pull request**: se il codice cambia, camb
 
 | Documento | Di cosa parla |
 |---|---|
+| [concept.md](concept.md) | L'idea del sito e del gestionale: pagine, funzioni, cosa verrà dopo |
 | [architettura.md](architettura.md) | Le parti del sistema, come si parlano e dove gireranno |
 | [decisioni.md](decisioni.md) | Ogni scelta tecnica, con il motivo e le alternative scartate |
 | [sviluppo.md](sviluppo.md) | Come avviare il progetto in locale e lavorarci ogni giorno |

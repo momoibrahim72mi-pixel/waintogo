@@ -1,30 +1,24 @@
-// Le rotte HTTP dei viaggi: ricevono la richiesta, controllano i dati,
+// Le rotte HTTP dei viaggi (gestionale): ricevono la richiesta, controllano i dati,
 // chiamano l'archivio e rispondono con il codice giusto.
 //
 //   GET    /viaggi                 elenco
-//   GET    /viaggi/:id             dettaglio
+//   GET    /viaggi/:id             dettaglio, con itinerario e partenze
 //   POST   /viaggi                 crea (come bozza)
 //   PUT    /viaggi/:id             modifica (si manda il viaggio intero, come nel modulo)
 //   POST   /viaggi/:id/pubblica    bozza → pubblicato, solo se il viaggio è completo
 //   POST   /viaggi/:id/ritira      pubblicato → bozza
-//   DELETE /viaggi/:id             elimina, solo se è una bozza
-//
-// I codici HTTP usati: 200 ok, 201 creato, 204 fatto (senza contenuto),
-// 400 dati non validi, 404 non trovato, 409 l'operazione non è permessa in questo stato.
+//   DELETE /viaggi/:id             elimina, solo se è una bozza senza partenze
 import type { Db } from "@waintogo/db";
 import { problemiPerPubblicare, viaggioInputSchema } from "@waintogo/shared";
 import type { FastifyInstance, FastifyReply } from "fastify";
-import { z } from "zod";
+import { conflitto, datiNonValidi, eUnId, nonTrovato } from "../http.js";
 import * as archivio from "./archivio.js";
 
-type Opzioni = { db: Db; oggi: () => string };
-
-export async function rotteViaggi(app: FastifyInstance, { db, oggi }: Opzioni) {
+export async function rotteViaggi(app: FastifyInstance, { db }: { db: Db }) {
   app.get("/viaggi", async () => archivio.elencoViaggi(db));
 
   app.get<{ Params: { id: string } }>("/viaggi/:id", async (req, reply) => {
-    const viaggio = await caricaOppure404(db, req.params.id, reply);
-    return viaggio ?? reply;
+    return (await caricaOppure404(db, req.params.id, reply)) ?? reply;
   });
 
   app.post("/viaggi", async (req, reply) => {
@@ -41,9 +35,10 @@ export async function rotteViaggi(app: FastifyInstance, { db, oggi }: Opzioni) {
     if (!dati.success) return datiNonValidi(reply, dati.error);
     // Un viaggio già pubblicato lo vedono i clienti: dopo la modifica deve restare completo.
     if (viaggio.stato === "pubblicato") {
-      const problemi = problemiPerPubblicare(dati.data, oggi());
+      const problemi = problemiPerPubblicare(dati.data);
       if (problemi.length > 0) return conflitto(reply, "Il viaggio è pubblicato e resterebbe incompleto", problemi);
     }
+    // La durata decide la data di ritorno delle partenze: le tappe devono starci dentro.
     await archivio.aggiornaViaggio(db, viaggio.id, dati.data);
     return archivio.trovaViaggio(db, viaggio.id);
   });
@@ -52,7 +47,7 @@ export async function rotteViaggi(app: FastifyInstance, { db, oggi }: Opzioni) {
     const viaggio = await caricaOppure404(db, req.params.id, reply);
     if (!viaggio) return reply;
     if (viaggio.stato !== "bozza") return conflitto(reply, "Si può pubblicare solo una bozza");
-    const problemi = problemiPerPubblicare(viaggio, oggi());
+    const problemi = problemiPerPubblicare(viaggio);
     if (problemi.length > 0) return conflitto(reply, "Il viaggio non è ancora completo", problemi);
     await archivio.cambiaStato(db, viaggio.id, "pubblicato");
     return archivio.trovaViaggio(db, viaggio.id);
@@ -70,32 +65,15 @@ export async function rotteViaggi(app: FastifyInstance, { db, oggi }: Opzioni) {
     const viaggio = await caricaOppure404(db, req.params.id, reply);
     if (!viaggio) return reply;
     if (viaggio.stato !== "bozza") return conflitto(reply, "Si può eliminare solo una bozza");
+    if (viaggio.partenze.length > 0) return conflitto(reply, "Elimina prima le partenze del viaggio");
     await archivio.eliminaViaggio(db, viaggio.id);
     return reply.code(204).send();
   });
 }
 
-// ---------------------------------------------------------------------------
-
-const uuid = z.uuid();
-
 /** Carica il viaggio; se l'id non è valido o non esiste risponde 404 e restituisce null. */
 async function caricaOppure404(db: Db, id: string, reply: FastifyReply) {
-  const viaggio = uuid.safeParse(id).success ? await archivio.trovaViaggio(db, id) : null;
-  if (!viaggio) reply.code(404).send({ errore: "Viaggio non trovato" });
+  const viaggio = eUnId(id) ? await archivio.trovaViaggio(db, id) : null;
+  if (!viaggio) nonTrovato(reply, "Viaggio");
   return viaggio;
-}
-
-/** Risposta 400 con un messaggio per ogni campo sbagliato: il gestionale li mostra accanto ai campi. */
-function datiNonValidi(reply: FastifyReply, errore: z.ZodError) {
-  const campi: Record<string, string> = {};
-  for (const problema of errore.issues) {
-    const campo = problema.path.join(".");
-    campi[campo] ??= problema.message;
-  }
-  return reply.code(400).send({ errore: "Dati non validi", campi });
-}
-
-function conflitto(reply: FastifyReply, errore: string, problemi: string[] = []) {
-  return reply.code(409).send({ errore, problemi });
 }
