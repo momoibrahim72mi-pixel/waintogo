@@ -5,11 +5,13 @@
 //   /viaggi            elenco dei viaggi
 //   /viaggi/nuovo      modulo per un viaggio nuovo
 //   /viaggi/:id        modulo per modificare un viaggio, con le sue partenze
-//   /partenze/:id      iscritti e pagamenti di una partenza
+//   /partenze/:id      iscritti e pagamenti di una partenza, spese e margine
+//   /conti             saldo, entrate e uscite, margini, tutte le spese
 //
 // WEBAPP, per il telefono (barra in basso, installabile sulla schermata home):
 //   /webapp/...        vedi webapp/WebApp.tsx
 import { BrowserRouter, Link, NavLink, Route, Routes } from "react-router";
+import { Conti } from "./pagine/Conti";
 import { Cruscotto } from "./pagine/Cruscotto";
 import { ElencoViaggi } from "./pagine/ElencoViaggi";
 import { ModuloViaggio } from "./pagine/ModuloViaggio";
@@ -40,6 +42,7 @@ function VersioneCompleta() {
             Cruscotto
           </NavLink>
           <NavLink to="/viaggi">Viaggi</NavLink>
+          <NavLink to="/conti">Conti</NavLink>
         </nav>
         <Link to="/webapp" className="link-webapp">
           📱 App per telefono
@@ -52,6 +55,7 @@ function VersioneCompleta() {
           <Route path="/viaggi/nuovo" element={<ModuloViaggio />} />
           <Route path="/viaggi/:id" element={<ModuloViaggio />} />
           <Route path="/partenze/:id" element={<PaginaPartenza />} />
+          <Route path="/conti" element={<Conti />} />
           <Route path="*" element={<p>Pagina non trovata.</p>} />
         </Routes>
       </main>

@@ -71,11 +71,16 @@ Solo l'API importa `@waintogo/db`: gli altri non possono toccare il database nem
 | `GET /partenze/:id` | Una partenza con iscritti e pagamenti |
 | `PUT /partenze/:id` | Modifica una partenza (i posti non possono scendere sotto gli occupati) |
 | `POST /partenze/:id/annulla`, `/riattiva` | Annulla o riattiva una partenza |
-| `DELETE /partenze/:id` | Elimina, solo se non ha iscrizioni |
+| `DELETE /partenze/:id` | Elimina, solo se non ha iscrizioni né spese |
 | `POST /partenze/:id/iscrizioni` | Aggiunge un iscritto a mano |
 | `POST /iscrizioni/:id/stato` | Cambia stato: conferma, lista d'attesa, annulla, ripristina |
 | `POST /iscrizioni/:id/pagamenti` | Registra un pagamento ricevuto |
 | `DELETE /pagamenti/:id` | Elimina un pagamento registrato per sbaglio |
+| `GET /spese` | Tutte le spese; `?partenza=<id>` quelle di una partenza, `?partenza=generali` quelle senza partenza |
+| `POST /spese` | Registra una spesa |
+| `PUT /spese/:id` | Modifica una spesa (anche per segnarla pagata) |
+| `DELETE /spese/:id` | Elimina una spesa registrata per sbaglio |
+| `GET /conti?anno=2026` | Saldo, da pagare e da incassare, entrate e uscite mese per mese, margine di ogni partenza dell'anno |
 
 Le rotte che cambiano una partenza, i suoi iscritti o i pagamenti rispondono con la partenza aggiornata: così il gestionale ridisegna la pagina senza una seconda richiesta.
 

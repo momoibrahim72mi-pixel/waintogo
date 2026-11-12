@@ -6,7 +6,10 @@ import {
   formattaEuro,
   iscrizionePubblicaSchema,
   partenzaInputSchema,
+  percentualeMargine,
   problemiPerPubblicare,
+  ricaviAttesi,
+  spesaInputSchema,
   statoPagamento,
   viaggioInputSchema,
 } from "./index.js";
@@ -109,5 +112,28 @@ describe("iscrizione e pagamenti", () => {
     expect(statoPagamento(20000, 129000, 30000)).toBe("da_pagare");
     expect(statoPagamento(30000, 129000, 30000)).toBe("acconto_versato");
     expect(statoPagamento(129000, 129000, 30000)).toBe("saldato");
+  });
+});
+
+describe("spese e conti", () => {
+  const iscritti = [
+    { stato: "confermata", pagatoCentesimi: 30000 },
+    { stato: "richiesta", pagatoCentesimi: 0 },
+    { stato: "annullata", pagatoCentesimi: 30000 },
+    { stato: "lista_attesa", pagatoCentesimi: 0 },
+  ];
+  it("i ricavi attesi contano il prezzo per chi occupa un posto e il versato per gli altri", () => {
+    expect(ricaviAttesi(iscritti, 100000, false)).toBe(230000);
+    // Partenza annullata: resta solo quello che è già entrato.
+    expect(ricaviAttesi(iscritti, 100000, true)).toBe(60000);
+  });
+  it("percentuale del margine", () => {
+    expect(percentualeMargine(25000, 100000)).toBe(25);
+    expect(percentualeMargine(100, 0)).toBeNull();
+  });
+  it("una spesa senza partenza è una spesa generale", () => {
+    const r = spesaInputSchema.parse({ descrizione: "Dominio", categoria: "software", importoCentesimi: 1200, data: "2026-11-12", pagata: true });
+    expect(r.partenzaId).toBeNull();
+    expect(spesaInputSchema.safeParse({ ...r, categoria: "boh" }).success).toBe(false);
   });
 });

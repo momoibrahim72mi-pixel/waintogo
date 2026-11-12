@@ -160,3 +160,18 @@ Se una decisione cambia, non si cancella: si aggiunge una nuova voce che la sost
 **Perché:** l'app si apre subito e, senza rete, mostra "Non riesco a contattare il server" invece di una pagina bianca. Non salvare i dati evita due problemi: vedere iscritti o pagamenti vecchi credendoli aggiornati, e lasciare dati personali degli iscritti sul telefono (GDPR).
 **Come si aggiorna:** a ogni versione nuova i file JS/CSS hanno nomi nuovi; la pagina si scarica sempre prima dalla rete. Se un giorno si cambia il modo di salvare, basta cambiare il nome `waintogo-webapp-v1` in `webapp-sw.js` e le vecchie copie vengono cancellate.
 **In sviluppo** (`pnpm dev`) il service worker non si attiva, per non lavorare su file vecchi.
+
+### D24 – Le spese in una tabella sola, i conti calcolati
+*2026-11-12 · richiesta di Mohamed*
+
+**Scelta:** una tabella `spese` per tutti i soldi che escono, con la partenza facoltativa (vuota = spesa generale). Le entrate restano i pagamenti degli iscritti. Saldo, mesi e margini **non si salvano**: si calcolano ogni volta da pagamenti e spese.
+**Perché:** come per lo stato dei pagamenti (D18), un numero calcolato non può essere sbagliato o vecchio. Una sola tabella per costi di viaggio e spese generali tiene semplice la pagina Conti e il modulo.
+**Saldo di cassa:** è "entrate registrate − spese pagate registrate". Corrisponde al conto in banca solo se si registra tutto; per ora non c'è un "saldo iniziale" (si potrà aggiungere come prima entrata, se servirà).
+**Rimborsi:** sono spese di categoria `rimborso`, non pagamenti negativi: così il pagamento originale resta visibile e il conto torna con l'estratto conto della banca.
+**Scartate:** una contabilità a partita doppia o un collegamento alla banca: troppo per un'agenzia che parte. Si potrà esportare tutto per il commercialista più avanti.
+
+### D25 – Margine sui ricavi attesi, non solo sull'incassato
+*2026-11-12*
+
+**Scelta:** il margine di una partenza è "ricavi attesi − tutti i costi registrati", dove i ricavi attesi contano il prezzo intero per chi occupa un posto e quanto hanno già versato gli altri.
+**Perché:** prima della partenza quasi nessuno ha saldato, quindi un margine sull'incassato sarebbe sempre negativo e non direbbe niente. Quello sui ricavi attesi risponde alla domanda vera: "questa partenza, così com'è, ci fa guadagnare?". L'incassato e i costi pagati sono mostrati accanto, per vedere anche la situazione di cassa.

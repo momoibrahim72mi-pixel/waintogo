@@ -1,7 +1,8 @@
 // Archivio delle partenze e delle loro iscrizioni.
-import { type Db, iscrizioni, pagamenti, partenze, viaggi } from "@waintogo/db";
-import { type Iscrizione, type Partenza, type PartenzaInput, statoPagamento } from "@waintogo/shared";
-import { asc, eq } from "drizzle-orm";
+import { type Db, iscrizioni, pagamenti, partenze, spese, viaggi } from "@waintogo/db";
+import { type Iscrizione, type Partenza, type PartenzaInput, type Spesa, statoPagamento } from "@waintogo/shared";
+import { asc, desc, eq } from "drizzle-orm";
+import { inSpesa } from "../spese/archivio.js";
 import { calcolaPartenza } from "./calcoli.js";
 
 /** Una partenza con il suo viaggio e i suoi iscritti (con i pagamenti): la pagina "Iscritti". */
@@ -9,6 +10,9 @@ export type DettaglioPartenza = Partenza & {
   viaggio: { id: string; titolo: string; durataGiorni: number; istruzioniPagamento: string };
   iscrizioni: Iscrizione[];
   incassatoCentesimi: number;
+  /** Le spese di questa partenza (voli, hotel...) e il loro totale. */
+  spese: Spesa[];
+  costiCentesimi: number;
 };
 
 export async function trovaPartenza(db: Db, id: string): Promise<DettaglioPartenza | null> {
@@ -20,16 +24,21 @@ export async function trovaPartenza(db: Db, id: string): Promise<DettaglioParten
         orderBy: [asc(iscrizioni.creatoIl)],
         with: { pagamenti: { orderBy: [asc(pagamenti.data)] } },
       },
+      spese: { orderBy: [desc(spese.data)] },
     },
   });
   if (!riga) return null;
-  const { viaggio, iscrizioni: righeIscrizioni, ...p } = riga;
+  const { viaggio, iscrizioni: righeIscrizioni, spese: righeSpese, ...p } = riga;
   const elenco = righeIscrizioni.map((i) => inIscrizione(i, p.prezzoCentesimi, p.accontoCentesimi));
   return {
     ...calcolaPartenza(p, viaggio.durataGiorni, righeIscrizioni),
     viaggio,
     iscrizioni: elenco,
     incassatoCentesimi: elenco.reduce((somma, i) => somma + i.pagatoCentesimi, 0),
+    spese: righeSpese.map((s) =>
+      inSpesa({ ...s, partenza: { id: p.id, dataInizio: p.dataInizio, viaggio: { titolo: viaggio.titolo } } }),
+    ),
+    costiCentesimi: righeSpese.reduce((somma, s) => somma + s.importoCentesimi, 0),
   };
 }
 

@@ -10,7 +10,7 @@ Le tabelle sono descritte in `packages/db/src/schema.ts`. Le migrazioni SQL gene
 | iscrizioni | ✅ creata (tappa 3) |
 | pagamenti | ✅ creata (tappa 3) |
 | utenti (organizzatori, con login) | in progetto (tappa 4) |
-| spese | in progetto (tappa 6) |
+| spese | ✅ creata (tappa 6, anticipata) |
 | immagini | in progetto (dopo l'MVP) |
 
 ## Come si collegano
@@ -19,6 +19,8 @@ Le tabelle sono descritte in `packages/db/src/schema.ts`. Le migrazioni SQL gene
 viaggi ──< tappe_itinerario
    │
    └──< partenze ──< iscrizioni ──< pagamenti
+            │
+            └──< spese (facoltativo: una spesa senza partenza è una spesa generale)
 ```
 
 `A ──< B` significa "un A ha molti B". Per esempio il viaggio "Marocco" ha 2 partenze (dicembre e gennaio), quella di dicembre ha 12 iscritti, e ognuno ha i suoi pagamenti.
@@ -156,13 +158,45 @@ Non c'è un campo "acconto o saldo": basta la somma. Se ci si sbaglia, il pagame
 
 ---
 
+## spese ✅
+
+I soldi che **escono**: costi di una partenza (voli, hotel, guide...) o spese generali dell'agenzia (pubblicità, dominio...). I soldi che **entrano** sono i pagamenti degli iscritti.
+
+| Colonna | Tipo | Note |
+|---|---|---|
+| partenza_id | uuid → partenze.id, **facoltativo**, con indice | vuoto = spesa generale. Una partenza con delle spese non si può eliminare (`on delete restrict`): si annulla |
+| descrizione | text | "Voli Milano–Marrakech A/R" |
+| categoria | enum `categoria_spesa` | `volo`, `alloggio`, `trasporto`, `attivita`, `guida`, `coordinatore`, `assicurazione`, `pubblicita`, `software`, `rimborso`, `altro` |
+| importo_centesimi | integer | almeno 1 centesimo |
+| data | date, con indice | se è pagata: quando sono usciti i soldi; se non lo è: entro quando va pagata |
+| pagata | boolean | una spesa "da pagare" conta nei costi della partenza ma non nel saldo di cassa |
+| fornitore, nota | text | facoltativi |
+
+**Rimborsi:** se un iscritto annulla e gli restituiamo dei soldi, il suo pagamento resta (i soldi sono entrati davvero) e il rimborso si registra come spesa di categoria `rimborso` sulla stessa partenza. Così entrate e uscite corrispondono a quello che è successo sul conto.
+
+### I conti (calcolati, non salvati)
+
+La pagina Conti non ha una tabella sua: tutto si calcola da `pagamenti` e `spese` (rotta `GET /conti`, file `apps/api/src/conti/rotte.ts`).
+
+| Valore | Come si calcola |
+|---|---|
+| entrate | somma di tutti i pagamenti degli iscritti |
+| uscite | somma delle spese **pagate** |
+| saldo di cassa | entrate − uscite: i soldi che dovrebbero esserci sul conto |
+| da pagare | somma delle spese non ancora pagate |
+| da incassare | per le partenze future non annullate, quanto devono ancora pagare gli iscritti che occupano un posto |
+| saldo previsto | saldo + da incassare − da pagare |
+| ricavi attesi di una partenza | il prezzo per chi occupa un posto, più quanto hanno già versato gli altri (annullati, in attesa). `ricaviAttesi()` in `packages/shared/src/spesa.ts` |
+| margine di una partenza | ricavi attesi − tutte le sue spese (pagate e da pagare) |
+
+Il mese di un movimento è quello della sua data (data del pagamento o della spesa).
+
+---
+
 ## In progetto
 
 ### utenti
 Gli organizzatori che entrano nel gestionale, con un **ruolo** (`admin`, `organizzatore`, `coordinatore`) e la password salvata cifrata, mai in chiaro.
-
-### spese
-I costi di una partenza (voli, hotel, guide), per calcolare il margine: categoria, descrizione, importo, data, fornitore.
 
 ### immagini
 Le foto del viaggio: il file sta su Object Storage, nel database c'è solo il percorso.

@@ -8,7 +8,7 @@
 | 3b | Webapp del gestionale per telefono, sotto `/webapp`, installabile | ✅ PR #4 |
 | 4 | Login e ruoli nel gestionale (indispensabile prima di metterlo online) | ⏳ prossima |
 | 5 | Email automatiche: conferma della richiesta con i dati per bonifico/Revolut, conferma pagamento, promemoria del saldo | |
-| 6 | Conti nel gestionale: spese e margine per partenza | |
+| 6 | Conti nel gestionale: spese, saldo e margine per partenza (anticipata su richiesta di Mohamed) | ✅ PR #5 |
 
 La lista completa delle idee per il gestionale, in ordine di utilità, è in [concept.md](concept.md).
 
@@ -49,5 +49,14 @@ Il concept completo è in [concept.md](concept.md). In pratica:
 - Schermate della webapp: **Oggi** (prossima partenza e cose da fare), **Partenze**, **iscritti di una partenza** con filtri, contatti (chiama, WhatsApp, email), registrazione veloce di un pagamento e cambio di stato.
 - **Installabile** (PWA): manifest, icone e un service worker che salva solo i file dell'app, mai i dati (D23). Controllato con gli strumenti di Chrome: nessun errore di installabilità.
 - Verifica: prova completa con Playwright su un iPhone simulato, anche senza rete, e immagine Docker con nginx.
+
+## Tappa 6 (spese e conti) – cosa è stato fatto
+
+- Nuova tabella **`spese`** (migrazione `0002_spese.sql`): costi di una partenza o spese generali, pagate o da pagare, con categoria e fornitore. Spiegazione in [modello-dati.md](modello-dati.md).
+- **API**: rotte `/spese` e `GET /conti` (saldo, mesi, margini). La pagina di una partenza riceve anche le sue spese e il totale dei costi.
+- **Gestionale (computer)**: nuova pagina **Conti** nel menu; nella pagina di una partenza, il **margine** e le **spese della partenza**.
+- **Webapp (telefono)**: nuova scheda **Conti** con il saldo, le spese da pagare (un tocco per segnarle pagate) e un modulo per registrare una spesa al volo.
+- **Dati di esempio**: 6 spese (5 sul Marocco, 1 generale).
+- **Test**: 3 nuovi test condivisi e 3 nuovi test dell'API, con un caso completo (acconti, saldo, annullamento con rimborso, spese pagate e da pagare, spesa generale) controllato al centesimo.
 
 > ⚠️ Il gestionale **non ha ancora il login** (arriva nella tappa 4): non va messo online prima di allora.

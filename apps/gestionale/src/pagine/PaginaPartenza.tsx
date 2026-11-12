@@ -9,6 +9,8 @@ import {
   METODI_PAGAMENTO,
   type MetodoPagamento,
   pagamentoInputSchema,
+  percentualeMargine,
+  ricaviAttesi,
   type StatoIscrizione,
 } from "@waintogo/shared";
 import { type FormEvent, Fragment, useCallback, useEffect, useState } from "react";
@@ -16,6 +18,8 @@ import { Link, useParams } from "react-router";
 import { api, type DettaglioPartenza } from "../api";
 import { RiquadroAvviso, useAzioni } from "../componenti/azioni";
 import { Campo } from "../componenti/Campo";
+import { Importo } from "../componenti/Importo";
+import { SezioneSpese } from "../componenti/SezioneSpese";
 import { StatoPagato, StatoPartenza, StatoIscritto } from "../componenti/Stato";
 import { euroPerCampo, formattaData, formattaEuro, oggi } from "../formato";
 
@@ -50,8 +54,11 @@ export function PaginaPartenza() {
   const cambiaStato = (i: Iscrizione, stato: StatoIscrizione, ok: string) =>
     fai(() => api.cambiaStatoIscrizione(i.id, stato), ok);
 
-  // Il totale che ci aspettiamo: prezzo × chi occupa un posto (richieste + confermate).
-  const attesoCentesimi = p.postiOccupati * p.prezzoCentesimi;
+  // Il totale che ci aspettiamo: il prezzo per chi occupa un posto, più quanto hanno già
+  // versato gli altri (annullati, in attesa). Stessa regola della pagina Conti.
+  const attesoCentesimi = ricaviAttesi(p.iscrizioni, p.prezzoCentesimi, p.annullata);
+  const margine = attesoCentesimi - p.costiCentesimi;
+  const percentuale = percentualeMargine(margine, attesoCentesimi);
 
   return (
     <>
@@ -239,6 +246,27 @@ export function PaginaPartenza() {
           </div>
         )}
       </section>
+
+      <section className="riquadro">
+        <h2>Margine della partenza</h2>
+        <div className="numeri numeri-3">
+          <Numero
+            etichetta="Ricavi attesi"
+            valore={formattaEuro(attesoCentesimi)}
+            sotto={`incassati ${formattaEuro(p.incassatoCentesimi)}`}
+          />
+          <Numero etichetta="Costi" valore={formattaEuro(p.costiCentesimi)} sotto="tutte le spese qui sotto" />
+          <div className="numero-grande">
+            <span className="sotto">Margine</span>
+            <strong>
+              <Importo valore={margine} />
+            </strong>
+            <span className="sotto">{percentuale !== null ? `${percentuale}% dei ricavi` : "nessun ricavo ancora"}</span>
+          </div>
+        </div>
+      </section>
+
+      <SezioneSpese titolo="Spese della partenza" spese={p.spese} partenzaFissa={p.id} quandoCambia={ricarica} />
 
       {p.viaggio.istruzioniPagamento && (
         <section className="riquadro">

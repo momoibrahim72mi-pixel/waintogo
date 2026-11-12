@@ -71,7 +71,13 @@ Abbiamo guardato due siti italiani che fanno questo mestiere. Ne prendiamo le id
    - azioni per confermare, mettere in lista d'attesa o annullare;
    - **registrare un pagamento** (importo, data, metodo, nota). Quando arriva il primo pagamento, una richiesta diventa confermata da sola;
    - **aggiungere un iscritto a mano**, per chi prenota al telefono o su WhatsApp;
-   - **esportare la lista** in CSV, per hotel, assicurazione e coordinatore.
+   - **esportare la lista** in CSV, per hotel, assicurazione e coordinatore;
+   - le **spese della partenza** e il suo **margine** (ricavi attesi meno costi).
+5. **Conti**:
+   - **saldo di cassa** (tutto quello che è entrato meno tutto quello che abbiamo pagato), **da incassare**, **da pagare** e **saldo previsto**;
+   - entrate e uscite **mese per mese**;
+   - **margine di ogni partenza** dell'anno, con la percentuale sui ricavi;
+   - **tutte le spese**: di una partenza o generali (pubblicità, dominio...), pagate o da pagare, con il pulsante per segnarle pagate.
 
 ### Due interfacce: computer e telefono
 
@@ -81,7 +87,7 @@ Il gestionale ha due interfacce sullo stesso indirizzo, con gli stessi dati:
 |---|---|---|
 | Indirizzo | `/` | `/webapp` |
 | Per chi | chi lavora alla scrivania | chi è in giro, o il coordinatore durante il viaggio |
-| Cosa fa | tutto: viaggi, partenze, iscritti, pagamenti, CSV | **Oggi** (le cose da fare), **Partenze**, iscritti di una partenza con i pulsanti per **chiamare, scrivere su WhatsApp o per email** e **registrare un pagamento** in due tocchi |
+| Cosa fa | tutto: viaggi, partenze, iscritti, pagamenti, CSV | **Oggi** (le cose da fare), **Partenze**, iscritti di una partenza con i pulsanti per **chiamare, scrivere su WhatsApp o per email** e **registrare un pagamento** in due tocchi; **Conti**: saldo, spese da pagare (un tocco per segnarle pagate) e **registrare una spesa al volo**, per esempio la guida pagata in contanti durante il viaggio |
 | Com'è fatta | menu in alto, tabelle | barra in basso a portata di pollice, schede, pulsanti grandi |
 | Installabile | no | sì: si aggiunge alla schermata home e si apre a tutto schermo come un'app |
 
@@ -94,7 +100,6 @@ Sul telefono mancano apposta le cose lunghe o delicate (creare viaggi, corregger
 | **Login e ruoli** (admin, organizzatore, coordinatore) | Indispensabile prima di mettere il gestionale online |
 | **Email automatiche**: conferma richiesta, conferma pagamento, promemoria saldo | Oggi le istruzioni si vedono solo sulla pagina di conferma |
 | **Lista d'attesa automatica**: quando qualcuno annulla, si avvisa il primo in attesa | Meno lavoro manuale |
-| **Spese e margine** per partenza (voli, hotel, guide) | Sapere quanto si guadagna davvero (tappa 6 della roadmap) |
 | **Area coordinatore**: lista dei partecipanti, contatti, documenti | Il coordinatore ha tutto sul telefono |
 | **Documenti dei partecipanti** (carta d'identità, passaporto) | Servono per voli e hotel. Attenzione al GDPR |
 | **Comunicazioni al gruppo** (email a tutti gli iscritti di una partenza, link al gruppo WhatsApp) | Organizzare prima della partenza |
