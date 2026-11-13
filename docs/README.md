@@ -12,3 +12,4 @@ La documentazione si aggiorna **a ogni pull request**: se il codice cambia, camb
 | [modello-dati.md](modello-dati.md) | Le tabelle del database e cosa rappresentano |
 | [roadmap.md](roadmap.md) | Le tappe dell'MVP: cosa è fatto e cosa manca |
 | [procedure.md](procedure.md) | Come si fa una modifica, dalla branch al merge |
+| [infra/](infra/README.md) | L'infrastruttura su Oracle Cloud: guide passo passo con Terraform e Kubernetes |
