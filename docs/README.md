@@ -9,6 +9,7 @@ La documentazione si aggiorna **a ogni pull request**: se il codice cambia, camb
 | [architettura.md](architettura.md) | Le parti del sistema, come si parlano e dove gireranno |
 | [decisioni.md](decisioni.md) | Ogni scelta tecnica, con il motivo e le alternative scartate |
 | [sviluppo.md](sviluppo.md) | Come avviare il progetto in locale e lavorarci ogni giorno |
+| [lingue.md](lingue.md) | Il sito in italiano, inglese e arabo: come funziona, come si cambia un testo |
 | [modello-dati.md](modello-dati.md) | Le tabelle del database e cosa rappresentano |
 | [roadmap.md](roadmap.md) | Le tappe dell'MVP: cosa è fatto e cosa manca |
 | [procedure.md](procedure.md) | Come si fa una modifica, dalla branch al merge |

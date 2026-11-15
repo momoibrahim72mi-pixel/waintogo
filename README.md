@@ -2,7 +2,7 @@
 
 Sito per viaggi di gruppo e gestionale per gli organizzatori.
 
-- **Sito pubblico**, pensato per il telefono: una pagina sola con il prossimo viaggio da prenotare, cosa facciamo, i viaggi passati, chi siamo, FAQ e contatti; pagina di ogni viaggio con itinerario e date, richiesta di iscrizione con codice di prenotazione e istruzioni per bonifico o Revolut.
+- **Sito pubblico**, pensato per il telefono: una pagina sola con il prossimo viaggio da prenotare, cosa facciamo, i viaggi passati, chi siamo, FAQ e contatti; pagina di ogni viaggio con itinerario e date, richiesta di iscrizione con codice di prenotazione e istruzioni per bonifico o Revolut. In **italiano, inglese e arabo** (da destra a sinistra), con il selettore della lingua sempre in alto: vedi [docs/lingue.md](docs/lingue.md).
 - **Gestionale**: cruscotto con le cose da fare, viaggi e partenze, iscritti, pagamenti registrati a mano, esportazione CSV, **spese e conti** (saldo, da incassare, da pagare, margine di ogni partenza).
 - **Webapp del gestionale per telefono** su `/webapp`: le cose da fare, gli iscritti con chiamata e WhatsApp a un tocco, i pagamenti in due tocchi. Si installa sulla schermata home come un'app.
 

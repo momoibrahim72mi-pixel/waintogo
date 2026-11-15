@@ -6,8 +6,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export type VoceMenu = { href: string; testo: string };
+// I testi del pulsante arrivano già tradotti dal layout (il dizionario resta sul server).
+type Testi = { principale: string; apri: string; chiudi: string };
 
-export function Menu({ voci }: { voci: VoceMenu[] }) {
+export function Menu({ voci, testi }: { voci: VoceMenu[]; testi: Testi }) {
   const [aperto, setAperto] = useState(false);
 
   // Esc chiude il menu, come ci si aspetta da un pannello che si apre.
@@ -19,7 +21,7 @@ export function Menu({ voci }: { voci: VoceMenu[] }) {
   }, [aperto]);
 
   return (
-    <nav aria-label="Menu principale" className="menu">
+    <nav aria-label={testi.principale} className="menu">
       <button
         type="button"
         className="menu-pulsante"
@@ -28,7 +30,7 @@ export function Menu({ voci }: { voci: VoceMenu[] }) {
         onClick={() => setAperto(!aperto)}
       >
         <span className="menu-icona" aria-hidden="true" />
-        <span className="solo-lettori">{aperto ? "Chiudi il menu" : "Apri il menu"}</span>
+        <span className="solo-lettori">{aperto ? testi.chiudi : testi.apri}</span>
       </button>
       <ul id="menu-voci" className={aperto ? "menu-voci aperto" : "menu-voci"}>
         {voci.map((v) => (
