@@ -1,5 +1,5 @@
 // Modulo per creare o modificare un viaggio (la scheda del catalogo) e, sotto,
-// le sue partenze. Azioni: salva, pubblica, riporta in bozza, elimina.
+// le sue partenze e le traduzioni per il sito. Azioni: salva, pubblica, riporta in bozza, elimina.
 //
 // Il modulo lavora su testi (quello che la persona scrive) e li trasforma nel formato
 // dell'API solo al salvataggio: per esempio gli elenchi "una riga = un punto".
@@ -20,6 +20,7 @@ import { api } from "../api";
 import { RiquadroAvviso, useAzioni } from "../componenti/azioni";
 import { Campo } from "../componenti/Campo";
 import { SezionePartenze } from "../componenti/SezionePartenze";
+import { SezioneTraduzioni } from "../componenti/SezioneTraduzioni";
 import { Stato } from "../componenti/Stato";
 
 type TappaModulo = { giorno: string; titolo: string; descrizione: string };
@@ -285,7 +286,11 @@ export function ModuloViaggio() {
       </form>
 
       {viaggio ? (
-        <SezionePartenze viaggio={viaggio} quandoCambia={ricarica} />
+        <>
+          <SezionePartenze viaggio={viaggio} quandoCambia={ricarica} />
+          {/* Inglese e arabo per il sito: si traduce dal testo italiano SALVATO. */}
+          <SezioneTraduzioni viaggio={viaggio} />
+        </>
       ) : (
         <p className="sotto">Le partenze (date, prezzi, posti) si aggiungono dopo aver creato la bozza.</p>
       )}

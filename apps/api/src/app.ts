@@ -9,6 +9,8 @@ import { type Oggi, oggiVero } from "./http.js";
 import { rottePartenze } from "./partenze/rotte.js";
 import { rottePubbliche } from "./pubblico/rotte.js";
 import { rotteSpese } from "./spese/rotte.js";
+import { rotteTraduzioni } from "./traduzioni/rotte.js";
+import type { Traduttore } from "./traduzioni/traduttore.js";
 import { rotteViaggi } from "./viaggi/rotte.js";
 
 type Opzioni = {
@@ -16,9 +18,11 @@ type Opzioni = {
   /** La data di oggi (AAAA-MM-GG). Si può cambiare nei test per avere risultati sempre uguali. */
   oggi?: Oggi;
   log?: boolean;
+  /** Il servizio di traduzione automatica, se configurato (vedi traduzioni/traduttore.ts). */
+  traduttore?: Traduttore | null;
 };
 
-export function creaApp({ db, oggi = oggiVero, log = false }: Opzioni) {
+export function creaApp({ db, oggi = oggiVero, log = false, traduttore = null }: Opzioni) {
   const app = Fastify({ logger: log });
 
   app.get("/health", async () => ({ stato: "ok" }));
@@ -29,6 +33,7 @@ export function creaApp({ db, oggi = oggiVero, log = false }: Opzioni) {
   app.register(rotteCruscotto, { db, oggi });
   app.register(rotteSpese, { db });
   app.register(rotteConti, { db, oggi });
+  app.register(rotteTraduzioni, { db, traduttore });
 
   // Rotte per il sito pubblico.
   app.register(rottePubbliche, { db, oggi });

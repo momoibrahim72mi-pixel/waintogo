@@ -19,6 +19,8 @@ type Props = {
   testi: TestiModulo;
   partenze: { id: string; testo: string }[];
   partenzaScelta: string;
+  /** Titolo e istruzioni tradotti (se la pagina non è in italiano e la traduzione c'è), altrimenti null. */
+  viaggioTradotto: { titolo: string; istruzioniPagamento: string } | null;
 };
 
 /**
@@ -33,19 +35,23 @@ function riempi(testo: string, pezzi: Record<string, ReactNode>) {
   ));
 }
 
-export function ModuloIscrizione({ lingua, testi, partenze, partenzaScelta }: Props) {
+export function ModuloIscrizione({ lingua, testi, partenze, partenzaScelta, viaggioTradotto }: Props) {
   const [esito, invia, inCorso] = useActionState<Stato, FormData>(richiediPosto, null);
 
   if (esito?.ok) {
     const r = esito.ricevuta;
     const inAttesa = r.stato === "lista_attesa";
+    // Se c'è la traduzione usiamo quella; la lingua dei testi serve per lang/dir.
+    const titolo = viaggioTradotto?.titolo ?? r.viaggio;
+    const istruzioni = viaggioTradotto?.istruzioniPagamento || r.istruzioniPagamento;
+    const linguaTesti = viaggioTradotto || lingua === "it" ? undefined : "it";
     return (
       <div className="conferma" role="status">
         <p className="occhiello">{inAttesa ? testi.inAttesaOcchiello : testi.ricevutaOcchiello}</p>
         <h2>{inAttesa ? testi.inAttesaTitolo : testi.ricevutaTitolo}</h2>
         <p>
-          {/* Il nome del viaggio è in italiano: <bdi> lo isola, così in arabo non si mescola alle date. */}
-          <bdi lang={lingua === "it" ? undefined : "it"}>{r.viaggio}</bdi> · {intervallo(lingua, r.dataInizio, r.dataFine)}
+          {/* <bdi> isola il nome del viaggio, così in arabo non si mescola alle date. */}
+          <bdi lang={linguaTesti}>{titolo}</bdi> · {intervallo(lingua, r.dataInizio, r.dataFine)}
         </p>
         <p>{testi.tuoCodice}</p>
         <p className="codice" dir="ltr">
@@ -67,8 +73,9 @@ export function ModuloIscrizione({ lingua, testi, partenze, partenzaScelta }: Pr
               })}
             </p>
             {/* I dati per il pagamento (IBAN, Revolut) si leggono da sinistra a destra in ogni lingua. */}
-            <div className="istruzioni" dir="ltr">
-              {r.istruzioniPagamento}
+            {/* dir="auto": l'IBAN resta da sinistra a destra; un testo arabo tradotto va da destra. */}
+            <div className="istruzioni" dir="auto">
+              {istruzioni}
             </div>
             <p>{testi.dopoAcconto}</p>
           </>

@@ -214,9 +214,24 @@ Se una decisione cambia, non si cancella: si aggiunge una nuova voce che la sost
 **Date e prezzi** si scrivono con le funzioni `Intl` di Node e del browser (`lib/formato.ts`), che conoscono già mesi, ordine e simbolo dell'euro di ogni lingua. I plurali arabi (sei forme) li sceglie `Intl.PluralRules`.
 
 ### D30 – Testi dei viaggi: in italiano finché non c'è la traduzione
-*2026-11-15 · in attesa della scelta di Mohamed*
+*2026-11-15 · completata da D31*
 
 **Oggi:** titoli, descrizioni e itinerari arrivano dal database e sono solo in italiano. Nelle pagine in inglese e arabo restano in italiano, marcati `lang="it" dir="ltr"`, con un avviso in cima alla pagina del viaggio. Tutto passa da `lib/contenuti.ts`.
 **Proposta (da confermare):** campi in più nel gestionale per scrivere a mano la versione inglese e araba di ogni viaggio; se mancano, il sito mostra l'italiano.
 **Scartata:** la traduzione automatica. I servizi buoni costano; quelli gratuiti da ospitare (come LibreTranslate) chiedono 1-2 GB di RAM sul cluster e per l'arabo danno risultati scarsi, e su un viaggio venduto un errore di traduzione è un problema vero.
 **Da fare prima di andare online:** far rileggere i testi arabi (e inglesi) dei dizionari a una persona di madrelingua.
+
+### D31 – Traduzioni dei viaggi: le prepara Claude, le approva Mohamed
+*2026-11-15 · scelta di Mohamed*
+
+**Scelta:** ogni viaggio ha una traduzione inglese e una araba, salvate nella tabella `traduzioni_viaggi`. Il giro normale:
+1. nel gestionale, sezione "Traduzioni per il sito", **"Copia il testo per la traduzione"** copia i testi italiani;
+2. Mohamed li incolla a Claude nella chat del progetto, e Claude risponde con un blocco `{"en": {...}, "ar": {...}}`;
+3. **"Incolla la traduzione"**: le due lingue diventano bozze "da rivedere";
+4. Mohamed le rilegge accanto all'italiano, corregge se serve e preme **"Approva e pubblica sul sito"**.
+Il sito mostra solo le traduzioni approvate. Se poi cambia il testo italiano, la traduzione diventa "superata": sparisce dal sito (torna l'italiano con l'avviso) finché non viene riapprovata.
+**Perché così:** Mohamed ha chiesto che le traduzioni le faccia Claude, con il suo controllo prima della pubblicazione. Claude **non** scrive nel database: i viaggi sono dati, non codice, e un push non li cambia; e l'API non deve essere raggiungibile da fuori. Quindi il passaggio è copia → chat → incolla, e l'ultima parola resta a Mohamed. Costo zero, e in arabo la qualità è migliore di un traduttore automatico gratuito.
+**Traduttore automatico facoltativo:** l'API sa usare DeepL (`DEEPL_API_KEY`) o LibreTranslate (`LIBRETRANSLATE_URL`). Senza variabili il pulsante "Traduci automaticamente" non compare. Se un giorno Mohamed vuole fare da solo, basta creare una chiave DeepL API Free (gratis fino a 500.000 caratteri al mese) e metterla nel Secret dell'API: nessuna modifica al codice. Anche la traduzione automatica resta una bozza da approvare.
+**"Superata" senza trigger nel database:** salviamo l'"impronta" (il testo italiano in JSON) al momento della traduzione o dell'approvazione e la confrontiamo con quella di oggi. È più semplice di un trigger e si vede leggendo il codice.
+**Le tappe devono corrispondere:** una traduzione con giorni diversi dall'itinerario italiano viene rifiutata, altrimenti sul sito un giorno resterebbe senza testo.
+**Cosa si traduce:** titolo, sottotitolo, destinazione, descrizione, fascia d'età, punti forti, incluso, non incluso, info utili, istruzioni di pagamento (l'IBAN va controllato che resti identico) e le tappe. Il nome del viaggio e le istruzioni tradotte compaiono anche nella ricevuta dopo l'iscrizione.

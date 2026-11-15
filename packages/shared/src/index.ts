@@ -5,3 +5,4 @@ export * from "./iscrizione.js";
 export * from "./cruscotto.js";
 export * from "./soldi.js";
 export * from "./spesa.js";
+export * from "./traduzione.js";

@@ -6,9 +6,18 @@
 //
 // Convenzione: in TypeScript i nomi sono camelCase (dataInizio),
 // nel database snake_case (data_inizio), come si usa in SQL.
-import { CATEGORIE_SPESA, LIVELLI, METODI_PAGAMENTO, STATI_ISCRIZIONE, STATI_VIAGGIO } from "@waintogo/shared";
+import {
+  CATEGORIE_SPESA,
+  LINGUE_TRADUZIONE,
+  LIVELLI,
+  METODI_PAGAMENTO,
+  STATI_ISCRIZIONE,
+  STATI_TRADUZIONE_SALVATI,
+  STATI_VIAGGIO,
+  type TestiTradotti,
+} from "@waintogo/shared";
 import { relations } from "drizzle-orm";
-import { boolean, date, index, integer, pgEnum, pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import { boolean, date, index, integer, jsonb, pgEnum, pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 
 // Gli "enum" di Postgres: il database stesso rifiuta valori diversi da questi.
 export const statoViaggio = pgEnum("stato_viaggio", STATI_VIAGGIO);
@@ -16,6 +25,8 @@ export const livelloViaggio = pgEnum("livello_viaggio", LIVELLI);
 export const statoIscrizione = pgEnum("stato_iscrizione", STATI_ISCRIZIONE);
 export const metodoPagamento = pgEnum("metodo_pagamento", METODI_PAGAMENTO);
 export const categoriaSpesa = pgEnum("categoria_spesa", CATEGORIE_SPESA);
+export const linguaTraduzione = pgEnum("lingua_traduzione", LINGUE_TRADUZIONE);
+export const statoTraduzione = pgEnum("stato_traduzione", STATI_TRADUZIONE_SALVATI);
 
 // Colonne che hanno tutte le tabelle.
 const colonneComuni = {
@@ -144,11 +155,40 @@ export const spese = pgTable(
   (t) => [index("spese_partenza_idx").on(t.partenzaId), index("spese_data_idx").on(t.data)],
 );
 
+/**
+ * La traduzione dei testi di un viaggio in una lingua (inglese o arabo). Una riga per
+ * viaggio e lingua. Spiegazione completa in packages/shared/src/traduzione.ts e D31.
+ */
+export const traduzioniViaggi = pgTable(
+  "traduzioni_viaggi",
+  {
+    ...colonneComuni,
+    // cascade: se si cancella il viaggio, spariscono anche le sue traduzioni.
+    viaggioId: uuid("viaggio_id")
+      .notNull()
+      .references(() => viaggi.id, { onDelete: "cascade" }),
+    lingua: linguaTraduzione("lingua").notNull(),
+    // jsonb: tutti i testi tradotti in una colonna sola, nella forma di TestiTradotti.
+    // Così, se un domani si traduce un campo in più, non serve cambiare la tabella.
+    testi: jsonb("testi").$type<TestiTradotti>().notNull(),
+    stato: statoTraduzione("stato").notNull().default("da_rivedere"),
+    // L'impronta del testo italiano da cui è stata fatta (o che è stata approvata):
+    // se l'italiano cambia, non corrisponde più e la traduzione è "superata".
+    improntaOriginale: text("impronta_originale").notNull(),
+    approvataIl: timestamp("approvata_il", { withTimezone: true }),
+  },
+  (t) => [unique("traduzione_viaggio_lingua").on(t.viaggioId, t.lingua)],
+);
+
 // Le relazioni non creano niente nel database: servono a Drizzle per caricare
 // dati collegati (un viaggio con le sue tappe e partenze) con una sola richiesta.
 export const viaggiRelazioni = relations(viaggi, ({ many }) => ({
   tappe: many(tappeItinerario),
   partenze: many(partenze),
+  traduzioni: many(traduzioniViaggi),
+}));
+export const traduzioniRelazioni = relations(traduzioniViaggi, ({ one }) => ({
+  viaggio: one(viaggi, { fields: [traduzioniViaggi.viaggioId], references: [viaggi.id] }),
 }));
 export const tappeRelazioni = relations(tappeItinerario, ({ one }) => ({
   viaggio: one(viaggi, { fields: [tappeItinerario.viaggioId], references: [viaggi.id] }),

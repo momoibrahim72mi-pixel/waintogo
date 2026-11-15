@@ -160,3 +160,17 @@ h3 { font-size: 1rem; margin: 1rem 0 0.75rem; }
 @media (max-width: 640px) {
   .numeri-3 { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Traduzioni del viaggio: per ogni lingua, l'italiano a sinistra e la traduzione a destra. */
+.lingua-traduzione { border-top: 1px solid var(--bordo); margin-top: 1.25rem; padding-top: 1rem; }
+.lingua-traduzione h3 { margin: 0; }
+.trad-mancante { background: #eef0f3; color: #3d4652; }
+.trad-da_rivedere, .trad-superata { background: #fef0c7; color: #7a2e0e; }
+.trad-approvata { background: #dcf3e8; color: #05603a; }
+.confronto { margin-top: 1rem; }
+.riga-confronto { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0.25rem 1rem; margin-bottom: 0.9rem; }
+.riga-confronto .etichetta { grid-column: 1 / -1; }
+.riga-confronto .originale { background: #f6f7f9; border: 1px solid var(--bordo); border-radius: 8px; padding: 0.55rem 0.7rem; white-space: pre-line; color: var(--tenue); }
+.riga-confronto input, .riga-confronto textarea { font: inherit; padding: 0.55rem 0.7rem; border: 1px solid var(--bordo); border-radius: 8px; width: 100%; }
+.incolla { width: 100%; font-family: ui-monospace, Menlo, monospace; font-size: 0.85rem; padding: 0.6rem; border: 1px solid var(--bordo); border-radius: 8px; margin-bottom: 0.75rem; }
+@media (max-width: 700px) { .riga-confronto { grid-template-columns: minmax(0, 1fr); } }

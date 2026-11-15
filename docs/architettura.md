@@ -68,6 +68,10 @@ Solo l'API importa `@waintogo/db`: gli altri non possono toccare il database nem
 | `POST /viaggi/:id/pubblica` | Pubblica, solo se il viaggio è completo |
 | `POST /viaggi/:id/ritira` | Riporta un viaggio pubblicato in bozza |
 | `DELETE /viaggi/:id` | Elimina, solo le bozze senza partenze |
+| `GET /viaggi/:id/traduzioni` | Le traduzioni inglese e araba, con il loro stato, e se c'è un traduttore automatico |
+| `PUT /viaggi/:id/traduzioni/:lingua` | Salva una traduzione (incollata o corretta) come bozza da rivedere |
+| `POST /viaggi/:id/traduzioni/:lingua/automatica` | Bozza fatta dal traduttore automatico, se configurato (503 se no) |
+| `POST /viaggi/:id/traduzioni/:lingua/approva` | Approva: da ora la traduzione è sul sito |
 | `POST /viaggi/:id/partenze` | Aggiunge una partenza |
 | `GET /partenze/:id` | Una partenza con iscritti e pagamenti |
 | `PUT /partenze/:id` | Modifica una partenza (i posti non possono scendere sotto gli occupati) |

@@ -8,7 +8,7 @@ import { notFound } from "next/navigation";
 import { Copertina } from "../../../../components/Copertina";
 import { Disponibilita } from "../../../../components/Disponibilita";
 import { viaggio as caricaViaggio } from "../../../../lib/api";
-import { attributiContenuto } from "../../../../lib/contenuti";
+import { attributiContenuto, nellaLingua } from "../../../../lib/contenuti";
 import { dizionario } from "../../../../lib/dizionari";
 import { dataBreve, intervallo, prezzo } from "../../../../lib/formato";
 import { alternative, linguaDa, percorso } from "../../../../lib/lingue";
@@ -18,8 +18,9 @@ type Props = { params: Promise<{ lingua: string; slug: string }> };
 // Titolo e descrizione della pagina (quelli che compaiono su Google e su WhatsApp).
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const [lingua, v] = await Promise.all([linguaDa(params), caricaViaggio(slug)]);
-  if (!v) return {};
+  const [lingua, trovato] = await Promise.all([linguaDa(params), caricaViaggio(slug)]);
+  if (!trovato) return {};
+  const v = nellaLingua(trovato, lingua);
   return {
     title: v.titolo,
     description: v.sottotitolo || v.descrizione.slice(0, 160),
@@ -30,11 +31,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PaginaViaggio({ params }: Props) {
   const { slug } = await params;
   const lingua = await linguaDa(params);
-  const v = await caricaViaggio(slug);
-  if (!v) notFound(); // mostra la pagina "non trovato" (app/[lingua]/not-found.tsx)
+  const trovato = await caricaViaggio(slug);
+  if (!trovato) notFound(); // mostra la pagina "non trovato" (app/not-found.tsx)
 
+  // I testi nella lingua della pagina, se la traduzione è approvata; se no l'italiano.
+  const v = nellaLingua(trovato, lingua);
   const t = dizionario(lingua).viaggio;
-  const c = attributiContenuto(lingua);
+  const c = attributiContenuto(lingua, v.linguaTesti);
   const prossima = v.partenze[0];
   const iscriviti = (id: string) => percorso(lingua, `/viaggi/${v.slug}/iscriviti?partenza=${id}`);
 
@@ -65,8 +68,8 @@ export default async function PaginaViaggio({ params }: Props) {
 
       <div className="contenitore layout-viaggio">
         <div>
-          {/* Nelle altre lingue un avviso spiega perché i testi del viaggio sono in italiano. */}
-          {"lang" in c && <p className="avviso-lingua">{t.soloItaliano}</p>}
+          {/* Se la traduzione non c'è ancora, un avviso spiega perché i testi sono in italiano. */}
+          {v.linguaTesti !== lingua && <p className="avviso-lingua">{t.soloItaliano}</p>}
 
           <section className="blocco">
             <h2>{t.il}</h2>

@@ -11,12 +11,14 @@ Le tabelle sono descritte in `packages/db/src/schema.ts`. Le migrazioni SQL gene
 | pagamenti | ✅ creata (tappa 3) |
 | utenti (organizzatori, con login) | in progetto (tappa 4) |
 | spese | ✅ creata (tappa 6, anticipata) |
+| traduzioni_viaggi | ✅ creata (tappa 3e) |
 | immagini | in progetto (dopo l'MVP) |
 
 ## Come si collegano
 
 ```
 viaggi ──< tappe_itinerario
+   ├──< traduzioni_viaggi (al massimo una per lingua: en, ar)
    │
    └──< partenze ──< iscrizioni ──< pagamenti
             │
@@ -173,6 +175,23 @@ I soldi che **escono**: costi di una partenza (voli, hotel, guide...) o spese ge
 | fornitore, nota | text | facoltativi |
 
 **Rimborsi:** se un iscritto annulla e gli restituiamo dei soldi, il suo pagamento resta (i soldi sono entrati davvero) e il rimborso si registra come spesa di categoria `rimborso` sulla stessa partenza. Così entrate e uscite corrispondono a quello che è successo sul conto.
+
+## traduzioni_viaggi ✅
+
+La versione **inglese** e **araba** dei testi di un viaggio, per il sito. Una riga per viaggio e lingua (vincolo unico `traduzione_viaggio_lingua`). Come si usano: [lingue.md](lingue.md) e D31.
+
+| Colonna | Tipo | Note |
+|---|---|---|
+| viaggio_id | uuid → viaggi.id | `on delete cascade`: si cancellano con il viaggio |
+| lingua | enum `lingua_traduzione` | `en`, `ar` |
+| testi | jsonb | tutti i testi tradotti insieme: titolo, sottotitolo, destinazione, descrizione, fascia d'età, punti forti, incluso, non incluso, info utili, istruzioni di pagamento e le tappe (`giorno`, `titolo`, `descrizione`). La forma è `TestiTradotti` in `packages/shared/src/traduzione.ts` |
+| stato | enum `stato_traduzione` | `da_rivedere` (bozza, non sul sito) o `approvata` (sul sito) |
+| impronta_originale | text | il testo italiano da cui è stata fatta o approvata, in JSON. Se l'italiano di oggi è diverso, la traduzione è **superata**: torna "da rivedere" nel gestionale e sparisce dal sito |
+| approvata_il | timestamp, facoltativo | quando è stata approvata |
+
+**Perché jsonb e non una colonna per campo:** le traduzioni si leggono e si scrivono sempre tutte insieme, e se un domani si traduce un campo in più non serve una migrazione. Per i dati che si cercano o si sommano (prezzi, date) restano le colonne normali.
+
+**Gli stati "mancante" e "superata"** non si salvano: si calcolano (nessuna riga = mancante; impronta diversa = superata).
 
 ### I conti (calcolati, non salvati)
 

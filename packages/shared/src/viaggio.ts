@@ -9,6 +9,7 @@
 //  - il tipo TypeScript corrispondente (z.infer), senza doverlo riscrivere a mano.
 import { z } from "zod";
 import type { PartenzaPubblica, Partenza } from "./partenza.js";
+import type { LinguaTraduzione, TestiTradotti } from "./traduzione.js";
 
 /** Gli stati possibili di un viaggio. */
 export const STATI_VIAGGIO = ["bozza", "pubblicato", "chiuso"] as const;
@@ -92,6 +93,8 @@ export type ViaggioPubblico = Omit<Viaggio, "stato" | "creatoIl" | "aggiornatoIl
   partenze: PartenzaPubblica[];
   /** Il prezzo più basso tra le partenze future, in centesimi (null se non ci sono date). */
   prezzoDaCentesimi: number | null;
+  /** Le traduzioni APPROVATE e aggiornate (vedi traduzione.ts). Una lingua che manca qui si mostra in italiano. */
+  traduzioni: Partial<Record<LinguaTraduzione, TestiTradotti>>;
 };
 
 /**
@@ -102,6 +105,8 @@ export type ViaggioPassato = Pick<Viaggio, "slug" | "titolo" | "destinazione" | 
   /** Le date dell'ultima volta che siamo partiti. */
   dataInizio: string;
   dataFine: string;
+  /** Titolo e destinazione nelle traduzioni approvate. */
+  traduzioni: Partial<Record<LinguaTraduzione, Pick<TestiTradotti, "titolo" | "destinazione">>>;
 };
 
 /**

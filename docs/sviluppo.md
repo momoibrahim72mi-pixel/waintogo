@@ -127,6 +127,15 @@ waintogo/
 | `API_URL` | Dove il server del sito trova l'API | `http://localhost:3001` |
 | `SITO_URL` | L'indirizzo pubblico del sito, per i link assoluti (`hreflang`, anteprime su WhatsApp). Va impostata quando ci sarà il dominio | `http://localhost:3000` |
 
+## Variabili dell'API per la traduzione automatica (facoltative)
+
+| Variabile | A cosa serve |
+|---|---|
+| `DEEPL_API_KEY` | Chiave di DeepL (le chiavi gratuite finiscono con `:fx`). Accende il pulsante "Traduci automaticamente" nel gestionale |
+| `LIBRETRANSLATE_URL` | In alternativa a DeepL: l'indirizzo di un LibreTranslate (più `LIBRETRANSLATE_API_KEY` se lo chiede) |
+
+Senza queste variabili tutto funziona lo stesso: le traduzioni si incollano a mano (vedi [lingue.md](lingue.md)). Vanno in `.env` in locale e nel Secret dell'API nel cluster, **mai** su git.
+
 ## Problemi frequenti
 
 - **`port is already allocated`**: un altro programma usa la porta. Fermalo, oppure cambia la porta a sinistra in `docker-compose.yml` (per esempio `"3002:3001"`).
