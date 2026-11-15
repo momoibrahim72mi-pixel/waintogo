@@ -9,7 +9,8 @@
 | 4 | Login e ruoli nel gestionale (indispensabile prima di metterlo online) | ⏳ prossima |
 | 5 | Email automatiche: conferma della richiesta con i dati per bonifico/Revolut, conferma pagamento, promemoria del saldo | |
 | 6 | Conti nel gestionale: spese, saldo e margine per partenza (anticipata su richiesta di Mohamed) | ✅ PR #5 |
-| 3c | Sito ripensato per il telefono: una pagina sola sul prossimo viaggio, viaggi passati, cosa facciamo (parere di Mohamed) | 🔄 questa PR |
+| 3c | Sito ripensato per il telefono: una pagina sola sul prossimo viaggio, viaggi passati, cosa facciamo (parere di Mohamed) | ✅ PR #6 |
+| 3d | Sito in inglese e arabo (richiesta di Mohamed) | 🔄 questa PR |
 
 La lista completa delle idee per il gestionale, in ordine di utilità, è in [concept.md](concept.md).
 
@@ -69,5 +70,18 @@ Il concept completo è in [concept.md](concept.md). In pratica:
 - **Pagina del viaggio**: barra "Prenota" fissa in basso sul telefono.
 - **API**: nuova rotta `GET /pubblico/viaggi-passati`, con un test. Due viaggi passati nei dati di esempio.
 - **Da completare con Mohamed**: testo di "Chi siamo", contatti veri in `apps/sito/lib/contatti.ts`, testi di "Cosa facciamo".
+
+## Tappa 3d (sito in inglese e arabo) – cosa è stato fatto
+
+Tutto spiegato in [lingue.md](lingue.md); decisioni D28, D29, D30.
+
+- **Tre lingue** sul sito pubblico: italiano (`/`), inglese (`/en`), arabo (`/ar`). Il gestionale resta in italiano.
+- **Selettore IT · EN · عربي** sempre visibile in alto, anche sul telefono; porta alla stessa pagina nell'altra lingua e ricorda la scelta.
+- **Prima visita**: il sito apre la lingua del telefono, se è inglese o arabo.
+- **Arabo da destra a sinistra**: tutta l'impaginazione si rovescia (CSS con proprietà logiche), caratteri e interlinea adatti, plurali arabi corretti.
+- **Testi fissi** (menu, home, FAQ, pagina del viaggio, modulo, ricevuta, errori) in tre dizionari controllati da TypeScript.
+- **Date e prezzi** nel formato di ogni lingua; link `hreflang` per Google.
+- **Testi dei viaggi**: per ora restano in italiano con un avviso (D30). La traduzione nel gestionale è la prossima PR, se Mohamed la conferma.
+- **Da fare**: rilettura dei testi arabi da una persona di madrelingua.
 
 > ⚠️ Il gestionale **non ha ancora il login** (arriva nella tappa 4): non va messo online prima di allora.

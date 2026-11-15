@@ -1,7 +1,17 @@
 /* Stile del sito pubblico. Pensato prima per il telefono (le regole "normali" sono per lo
    schermo stretto), poi le @media (min-width: ...) aggiungono quello che serve sugli schermi larghi.
    Niente look da agenzia: titoli grandi e pieni, poche scatole, colori decisi (vedi D27).
-   I colori sono "variabili": per cambiare il look basta toccarli qui. */
+   I colori sono "variabili": per cambiare il look basta toccarli qui.
+
+   ARABO E DESTRA-SINISTRA (vedi D29 in docs/decisioni.md). In arabo <html> ha dir="rtl" e il
+   browser rovescia da solo righe, elenchi e griglie. Perché funzioni anche il resto, qui si usano
+   le proprietà "logiche", che parlano di inizio e fine della riga invece che di sinistra e destra:
+     margin-inline-start   = margine a sinistra in italiano, a destra in arabo
+     padding-inline-end    = spazio a destra in italiano, a sinistra in arabo
+     inset-inline-start    = come "left", ma dal lato dove inizia la riga
+     text-align: end       = allineato a destra in italiano, a sinistra in arabo
+   Regola per chi tocca questo file: non scrivere left/right per spazi e posizioni,
+   usa sempre le versioni "inline-start/end". */
 :root {
   --sabbia: #fbf7f1;        /* sfondo */
   --carta: #ffffff;
@@ -50,18 +60,34 @@ html { scroll-behavior: smooth; }
 .logo span { color: var(--corallo); }
 .solo-lettori { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
+/* A destra della testata: il selettore della lingua e il menu, uno accanto all'altro. */
+.testata-destra { display: flex; align-items: center; gap: 6px; }
+@media (min-width: 900px) { .testata-destra { flex-direction: row-reverse; gap: 22px; } }
+
+/* Selettore della lingua: "IT · EN · عربي", sempre visibile, anche sul telefono.
+   Ogni voce è alta 44px: la misura minima consigliata per toccarla bene con il pollice. */
+.lingue { display: flex; align-items: center; }
+.lingue a {
+  display: grid; place-items: center; min-width: 40px; min-height: 44px; padding: 0 6px;
+  font-size: 0.85rem; font-weight: 700; color: var(--tenue); text-decoration: none; border-radius: 8px;
+}
+.lingue a:hover { color: var(--inchiostro); }
+.lingue a[aria-current="true"] { color: var(--inchiostro); text-decoration: underline; text-decoration-color: var(--corallo); text-decoration-thickness: 2px; text-underline-offset: 6px; }
+/* "عربي" in caratteri arabi: un po' più grande, altrimenti sembra più piccolo delle lettere latine. */
+.lingue a:lang(ar) { font-size: 0.95rem; }
+
 /* Menu sul telefono: il pulsante ☰ (tre righe disegnate con il CSS) apre un pannello sotto la testata. */
-.menu-pulsante { width: 48px; height: 48px; margin-right: -10px; border: 0; background: transparent; display: grid; place-items: center; cursor: pointer; }
+.menu-pulsante { width: 48px; height: 48px; margin-inline-end: -10px; border: 0; background: transparent; display: grid; place-items: center; cursor: pointer; }
 .menu-icona, .menu-icona::before, .menu-icona::after { display: block; width: 24px; height: 2px; border-radius: 2px; background: var(--inchiostro); transition: transform 0.2s, background 0.2s; }
 .menu-icona { position: relative; }
-.menu-icona::before, .menu-icona::after { content: ""; position: absolute; left: 0; }
+.menu-icona::before, .menu-icona::after { content: ""; position: absolute; inset-inline-start: 0; }
 .menu-icona::before { top: -7px; }
 .menu-icona::after { top: 7px; }
 /* Da aperto le tre righe diventano una X. */
 .menu-pulsante[aria-expanded="true"] .menu-icona { background: transparent; }
 .menu-pulsante[aria-expanded="true"] .menu-icona::before { transform: translateY(7px) rotate(45deg); }
 .menu-pulsante[aria-expanded="true"] .menu-icona::after { transform: translateY(-7px) rotate(-45deg); }
-.menu-voci { display: none; list-style: none; margin: 0; padding: 8px 16px 20px; position: absolute; left: 0; right: 0; top: 100%; background: var(--sabbia); border-bottom: 1px solid var(--linea); box-shadow: 0 16px 24px rgb(23 34 31 / 10%); }
+.menu-voci { display: none; list-style: none; margin: 0; padding: 8px 16px 20px; position: absolute; inset-inline: 0; top: 100%; background: var(--sabbia); border-bottom: 1px solid var(--linea); box-shadow: 0 16px 24px rgb(23 34 31 / 10%); }
 .menu-voci.aperto { display: block; }
 .menu-voci a { display: block; padding: 14px 0; font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em; color: var(--inchiostro); text-decoration: none; border-bottom: 1px solid var(--linea); }
 /* Sullo schermo largo le voci stanno in fila e il pulsante non serve. */
@@ -168,7 +194,7 @@ html { scroll-behavior: smooth; }
 
 /* Chiusura e contatti */
 .centrato { text-align: center; }
-.centrato .introduzione { margin-left: auto; margin-right: auto; }
+.centrato .introduzione { margin-inline: auto; }
 .chiusura { padding: 64px 0 72px; }
 .chiusura h2 { font-size: clamp(2rem, 8vw, 3rem); font-weight: 900; letter-spacing: -0.04em; }
 .contatti { list-style: none; padding: 0; margin: 24px 0 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
@@ -197,7 +223,7 @@ html { scroll-behavior: smooth; }
 .copertina { position: relative; aspect-ratio: 16 / 10; overflow: hidden; }
 .copertina img { width: 100%; height: 100%; object-fit: cover; }
 .copertina-segnaposto { width: 100%; height: 100%; display: flex; align-items: flex-end; padding: 16px; color: rgb(255 255 255 / 92%); font-size: 2rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1; }
-.copertina .etichetta { position: absolute; top: 12px; left: 12px; }
+.copertina .etichetta { position: absolute; top: 12px; inset-inline-start: 12px; }
 
 /* Etichette di disponibilità */
 .etichetta { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: var(--carta); color: var(--inchiostro); }
@@ -231,18 +257,18 @@ html { scroll-behavior: smooth; }
 @media (min-width: 960px) { .in-breve { position: sticky; top: 84px; } }
 .in-breve dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin: 0 0 16px; }
 .in-breve dt { color: var(--tenue); }
-.in-breve dd { margin: 0; font-weight: 600; text-align: right; }
+.in-breve dd { margin: 0; font-weight: 600; text-align: end; }
 .in-breve .pulsante { width: 100%; }
 .blocco { margin-bottom: 40px; }
 .punti-forti { padding: 0; list-style: none; display: grid; gap: 10px; }
 .punti-forti li { background: var(--petrolio-chiaro); padding: 12px 16px; border-radius: 10px; font-weight: 600; }
-.itinerario { list-style: none; padding: 0; border-left: 3px solid var(--linea); margin-left: 12px; }
-.itinerario li { position: relative; padding: 0 0 20px 24px; }
-.itinerario li::before { content: ""; position: absolute; left: -9px; top: 4px; width: 15px; height: 15px; border-radius: 50%; background: var(--corallo); border: 3px solid var(--sabbia); }
+.itinerario { list-style: none; padding: 0; border-inline-start: 3px solid var(--linea); margin-inline-start: 12px; }
+.itinerario li { position: relative; padding: 0 0 20px; padding-inline-start: 24px; }
+.itinerario li::before { content: ""; position: absolute; inset-inline-start: -9px; top: 4px; width: 15px; height: 15px; border-radius: 50%; background: var(--corallo); border: 3px solid var(--sabbia); }
 .itinerario .giorno { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--corallo); }
 .itinerario p { margin: 4px 0 0; color: var(--tenue); }
 .inclusi { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-.inclusi ul { padding-left: 0; list-style: none; }
+.inclusi ul { padding-inline-start: 0; list-style: none; }
 .inclusi li { padding: 6px 0; border-bottom: 1px solid var(--linea); }
 .si li::before { content: "✓ "; color: #1f7a46; font-weight: 700; }
 .no li::before { content: "✕ "; color: #a33; font-weight: 700; }
@@ -270,3 +296,31 @@ html { scroll-behavior: smooth; }
 .conferma { background: var(--carta); border-radius: var(--raggio); padding: 28px; box-shadow: var(--ombra); max-width: 720px; }
 .codice { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 1.6rem; font-weight: 800; letter-spacing: 0.08em; background: var(--petrolio-chiaro); color: var(--petrolio-scuro); padding: 8px 14px; border-radius: 10px; display: inline-block; }
 .istruzioni { background: var(--sabbia); border: 1px dashed #cfc6b8; padding: 16px; border-radius: 10px; white-space: pre-line; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.95rem; }
+
+/* Avviso nelle pagine in inglese o arabo: i testi del viaggio per ora sono in italiano. */
+.avviso-lingua { background: var(--petrolio-chiaro); color: var(--petrolio-scuro); padding: 12px 16px; border-radius: 10px; font-size: 0.95rem; margin: 0 0 24px; }
+
+/* ---------- Arabo ----------
+   Le lettere arabe sono legate tra loro: lo spazio negativo tra le lettere (letter-spacing),
+   che dà carattere ai titoli latini, in arabo le stacca e rovina le parole. Lo togliamo.
+   Il maiuscolo non esiste, e le lettere hanno "code" sopra e sotto la riga: serve più
+   interlinea, soprattutto nei titoli grandi.
+   I caratteri: prima quelli arabi che hanno telefoni e computer (Noto su Android, Geeza su
+   iPhone e Mac, Segoe UI e Tahoma su Windows). Nessun carattere da scaricare: costo zero. */
+:lang(ar) {
+  font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans Arabic", "Geeza Pro", Tahoma, sans-serif;
+}
+:lang(ar) h1, :lang(ar) h2, :lang(ar) h3, :lang(ar) .occhiello,
+:lang(ar) .attivita-durata, :lang(ar) .giorno, :lang(ar) .menu-voci a, :lang(ar) .prossimo-prezzo {
+  letter-spacing: 0;
+}
+:lang(ar) h1, :lang(ar) h2, :lang(ar) h3 { line-height: 1.35; }
+:lang(ar) .apertura h1 { line-height: 1.25; max-width: 14ch; }
+:lang(ar) body, :lang(ar) .introduzione { line-height: 1.8; }
+/* Il logo è latino anche nella pagina araba: torna il suo carattere e la sua spaziatura. */
+:lang(ar) .logo { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; letter-spacing: -0.05em; }
+/* I testi del viaggio rimasti in italiano (lang="it" dentro la pagina araba) riprendono
+   il carattere latino e la loro spaziatura. */
+:lang(ar) [lang="it"] { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+/* Il codice di prenotazione dentro una frase non va spezzato a metà ("WTG-" e "4HWWJ5"). */
+.senza-a-capo { white-space: nowrap; }

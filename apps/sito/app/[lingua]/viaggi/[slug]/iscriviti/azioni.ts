@@ -2,7 +2,7 @@
 // Una "Server Action": una funzione che gira sul server del sito ma si può chiamare
 // direttamente da un modulo nel browser. Riceve i campi del modulo (FormData), li manda
 // all'API e restituisce l'esito, che il modulo mostra (errori o pagina di conferma).
-import { inviaIscrizione, type EsitoIscrizione } from "../../../../lib/api";
+import { inviaIscrizione, type EsitoIscrizione } from "../../../../../lib/api";
 
 export type Stato = EsitoIscrizione | null;
 

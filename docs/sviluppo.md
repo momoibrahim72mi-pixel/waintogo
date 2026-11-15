@@ -66,6 +66,7 @@ docker compose exec api node dist/esempi.js
 2. Nel **gestionale**, sul cruscotto, la persona appare in "Richieste da confermare". Cliccala, apri "Pagamenti" e registra l'acconto: l'iscrizione diventa confermata da sola.
 3. Riempi una partenza: chi chiede dopo finisce in lista d'attesa, e sul sito la partenza appare "Completa".
 4. Nel menu **Conti** guarda saldo e margine; registra una spesa e segnane una come pagata: i numeri cambiano subito.
+5. Sul sito tocca **EN** e **عربي** in alto: la pagina cambia lingua, e in arabo va da destra a sinistra. Come si cambiano i testi: [lingue.md](lingue.md).
 
 ## Provare la webapp per telefono
 
@@ -103,7 +104,8 @@ I test dell'API usano un database **separato**, `waintogo_test`, creato in autom
 waintogo/
 ├── apps/
 │   ├── api/            src/server.ts avvia; src/viaggi, partenze, iscrizioni, pubblico, cruscotto: rotte e accesso ai dati; test/ i test
-│   ├── sito/           app/ le pagine (ogni cartella = un indirizzo), components/ i pezzi riusati, lib/ chiamate all'API, formati e contatti (lib/contatti.ts)
+│   ├── sito/           app/[lingua]/ le pagine (ogni cartella = un indirizzo), components/ i pezzi riusati, lib/ chiamate all'API, formati e contatti (lib/contatti.ts),
+│                       lib/dizionari/ i testi in it/en/ar, proxy.ts la scelta della lingua (vedi lingue.md)
 │   └── gestionale/     src/pagine/ le pagine per computer, src/webapp/ la webapp per telefono, src/componenti/ i pezzi riusati,
 │                       src/api.ts le chiamate all'API, public/ manifest, icone e service worker, nginx.conf il server
 ├── packages/
@@ -117,6 +119,13 @@ waintogo/
 ├── turbo.json          dice a Turborepo come lanciare build/dev/typecheck
 └── tsconfig.base.json  impostazioni TypeScript comuni a tutte le app
 ```
+
+## Variabili del sito
+
+| Variabile | A cosa serve | Valore in sviluppo |
+|---|---|---|
+| `API_URL` | Dove il server del sito trova l'API | `http://localhost:3001` |
+| `SITO_URL` | L'indirizzo pubblico del sito, per i link assoluti (`hreflang`, anteprime su WhatsApp). Va impostata quando ci sarà il dominio | `http://localhost:3000` |
 
 ## Problemi frequenti
 

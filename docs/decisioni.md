@@ -194,3 +194,29 @@ Se una decisione cambia, non si cancella: si aggiunge una nuova voce che la sost
 **Telefono prima di tutto:** il CSS è scritto per lo schermo stretto e si allarga con `@media (min-width: ...)`. Pulsanti alti 52 px, menu ☰ in alto a destra, viaggi passati che scorrono di lato, barra "Prenota" fissa in basso nella pagina del viaggio.
 **Scartato:** un carattere scaricato da Google Fonts: servirebbe la rete durante la costruzione dell'immagine Docker e rallenterebbe la pagina sul telefono. Si usano i caratteri del sistema (San Francisco su iPhone, Roboto su Android).
 
+
+### D28 – Lingue nell'indirizzo, italiano senza prefisso
+*2026-11-15 · richiesta di Mohamed*
+
+**Scelta:** il sito pubblico è in italiano, inglese e arabo. La lingua sta nell'indirizzo: `/en/...` e `/ar/...`; l'italiano resta senza prefisso (`/viaggi/x`). Un `proxy.ts` (il "middleware" di Next 16) riscrive di nascosto gli indirizzi italiani in `/it/...`, così tutte le pagine stanno in `app/[lingua]/` e ricevono la lingua come parametro. I testi fissi sono in tre dizionari TypeScript (`lib/dizionari/`), controllati dal compilatore: se una lingua non ha un testo, `pnpm typecheck` fallisce.
+**Perché un indirizzo per lingua:** Google indicizza ogni versione (con i link `hreflang` che dicono "questa è la stessa pagina in inglese"), e un link condiviso su WhatsApp si apre nella lingua in cui è stato mandato. Con la lingua solo in un cookie, tutti vedrebbero lo stesso indirizzo con contenuti diversi.
+**Perché l'italiano senza prefisso:** i link già in giro restano validi e gli indirizzi principali restano corti.
+**Scelta automatica:** alla prima visita conta la lingua del telefono (`Accept-Language`); dopo, la scelta fatta con il selettore (cookie `lingua`, un anno). Google non manda `Accept-Language`, quindi vede l'italiano, e ogni versione resta raggiungibile dal suo indirizzo.
+**Selettore fuori dal menu:** "IT · EN · عربي" è sempre visibile in alto, anche sul telefono. Chi non legge l'italiano non deve indovinare che la lingua si cambia dentro un menu in italiano. Ogni lingua è scritta in sé stessa.
+**Il layout principale resta in `app/`** e legge la lingua dall'indirizzo (intestazione `x-percorso` messa dal proxy). Con il layout dentro `app/[lingua]/`, Next non riesce a mostrare la pagina "non trovato" con menu e stile (lo dice la sua documentazione: servirebbe `global-not-found`, ancora sperimentale).
+**Scartate:** librerie come `next-intl` (una dipendenza in più per tre file di testi); tradurre anche le parole degli indirizzi (`/en/trips/...`: più codice, nessun vantaggio vero per un sito di una pagina).
+
+### D29 – Arabo da destra a sinistra con il CSS "logico"
+*2026-11-15*
+
+**Scelta:** in arabo `<html dir="rtl">` e nel CSS solo proprietà logiche (`margin-inline-start`, `inset-inline-start`, `text-align: end`...) al posto di left/right. Così lo stesso foglio di stile va bene per entrambi i versi, senza un secondo CSS per l'arabo.
+**Dettagli per l'arabo:** niente `letter-spacing` negativo (stacca le lettere legate), interlinea più alta, caratteri di sistema con buon supporto arabo (Noto, Geeza, Segoe UI, Tahoma: nessun carattere da scaricare, costo zero), frecce girate, numeri occidentali (`ar-u-nu-latn`) perché uguali a quelli del codice di prenotazione e del telefono. Email, telefono, codice, IBAN e logo restano sempre `dir="ltr"`.
+**Date e prezzi** si scrivono con le funzioni `Intl` di Node e del browser (`lib/formato.ts`), che conoscono già mesi, ordine e simbolo dell'euro di ogni lingua. I plurali arabi (sei forme) li sceglie `Intl.PluralRules`.
+
+### D30 – Testi dei viaggi: in italiano finché non c'è la traduzione
+*2026-11-15 · in attesa della scelta di Mohamed*
+
+**Oggi:** titoli, descrizioni e itinerari arrivano dal database e sono solo in italiano. Nelle pagine in inglese e arabo restano in italiano, marcati `lang="it" dir="ltr"`, con un avviso in cima alla pagina del viaggio. Tutto passa da `lib/contenuti.ts`.
+**Proposta (da confermare):** campi in più nel gestionale per scrivere a mano la versione inglese e araba di ogni viaggio; se mancano, il sito mostra l'italiano.
+**Scartata:** la traduzione automatica. I servizi buoni costano; quelli gratuiti da ospitare (come LibreTranslate) chiedono 1-2 GB di RAM sul cluster e per l'arabo danno risultati scarsi, e su un viaggio venduto un errore di traduzione è un problema vero.
+**Da fare prima di andare online:** far rileggere i testi arabi (e inglesi) dei dizionari a una persona di madrelingua.

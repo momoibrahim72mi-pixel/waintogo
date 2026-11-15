@@ -30,7 +30,7 @@ I nomi di dominio sono esempi: il dominio vero lo sceglie Mohamed.
 
 | Parte | Cartella | Cosa fa | Porta |
 |---|---|---|---|
-| **sito** | `apps/sito` | Il sito pubblico: una home in una pagina (prossimo viaggio, cosa facciamo, viaggi passati, chi siamo, FAQ, contatti), la pagina del viaggio e la richiesta di iscrizione. Le pagine sono generate sul server (SSR), così i motori di ricerca le leggono complete. | 3000 |
+| **sito** | `apps/sito` | Il sito pubblico: una home in una pagina (prossimo viaggio, cosa facciamo, viaggi passati, chi siamo, FAQ, contatti), la pagina del viaggio e la richiesta di iscrizione. Le pagine sono generate sul server (SSR), così i motori di ricerca le leggono complete. In italiano, inglese e arabo ([lingue.md](lingue.md)). | 3000 |
 | **gestionale** | `apps/gestionale` | L'app per gli organizzatori: cruscotto, viaggi e partenze, iscritti, pagamenti. È una "single page app": dopo la compilazione è solo HTML/JS/CSS servito da nginx. | 8080 |
 | **api** | `apps/api` | Il backend. È l'unica parte che parla con il database, e sia il sito sia il gestionale passano da lei. | 3001 |
 | **db** | – | PostgreSQL. In locale gira con docker compose, nel cluster con CloudNativePG. | 5432 |

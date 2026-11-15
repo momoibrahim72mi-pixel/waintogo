@@ -14,6 +14,9 @@ const config: NextConfig = {
     return [
       { source: "/viaggi", destination: "/#prossimo-viaggio", permanent: false },
       { source: "/come-funziona", destination: "/#faq", permanent: false },
+      // Gli stessi indirizzi nelle altre lingue (vedi D28): /en/viaggi → /en#prossimo-viaggio.
+      { source: "/:lingua(en|ar)/viaggi", destination: "/:lingua#prossimo-viaggio", permanent: false },
+      { source: "/:lingua(en|ar)/come-funziona", destination: "/:lingua#faq", permanent: false },
     ];
   },
 };
