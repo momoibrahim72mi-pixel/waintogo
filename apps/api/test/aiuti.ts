@@ -3,12 +3,14 @@ import { creaDb } from "@waintogo/db";
 import { sql } from "drizzle-orm";
 import { expect } from "vitest";
 import { creaApp } from "../src/app.js";
+import { traduttoreFinto } from "../src/traduzioni/traduttore.js";
 import { URL_TEST } from "./preparazione.js";
 
 export const { db, chiudi } = creaDb(URL_TEST);
 // "Oggi" fisso: i test danno lo stesso risultato in qualunque giorno vengano eseguiti.
 export const OGGI = "2026-11-09";
-export const app = creaApp({ db, oggi: () => OGGI });
+// Il traduttore finto ("[en] testo"): i test non chiamano mai servizi veri su internet.
+export const app = creaApp({ db, oggi: () => OGGI, traduttore: traduttoreFinto });
 
 export async function svuota() {
   // CASCADE svuota anche le tabelle collegate: tappe, partenze, iscrizioni, pagamenti, spese.

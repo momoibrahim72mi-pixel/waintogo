@@ -18,7 +18,7 @@ import { Copertina } from "../../components/Copertina";
 import { Domande } from "../../components/Domande";
 import { Disponibilita } from "../../components/Disponibilita";
 import { catalogo, viaggiPassati } from "../../lib/api";
-import { attributiContenuto } from "../../lib/contenuti";
+import { attributiContenuto, nellaLingua } from "../../lib/contenuti";
 import { dizionario } from "../../lib/dizionari";
 import { dataBreve, intervallo, nomeMese, prezzo } from "../../lib/formato";
 import { alternative, direzione, linguaDa, percorso, type Lingua } from "../../lib/lingue";
@@ -32,10 +32,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Home({ params }: Props) {
   const lingua = await linguaDa(params);
   const t = dizionario(lingua);
-  const c = attributiContenuto(lingua);
   // La freccia "avanti" punta nel verso della lettura: → in italiano e inglese, ← in arabo.
   const avanti = direzione(lingua) === "rtl" ? "←" : "→";
-  const [viaggi, passati] = await Promise.all([catalogo(), viaggiPassati()]);
+  const [tutti, tuttiPassati] = await Promise.all([catalogo(), viaggiPassati()]);
+  // Ogni viaggio con i testi nella lingua della pagina, se tradotti e approvati (lib/contenuti.ts).
+  const viaggi = tutti.map((v) => nellaLingua(v, lingua));
+  const passati = tuttiPassati.map((v) => nellaLingua(v, lingua));
   // Il "prossimo viaggio" è quello con la partenza più vicina. Di solito ce n'è uno solo;
   // se ce ne sono altri si vedono in piccolo sotto ("Più avanti").
   const inProgramma = viaggi
@@ -60,11 +62,11 @@ export default async function Home({ params }: Props) {
           </h1>
           <p>{t.home.sotto}</p>
           <a className="pulsante" href="#prossimo-viaggio">
-            {/* <bdi> isola la destinazione (scritta in italiano) dal resto della frase. */}
+            {/* <bdi> isola la destinazione (che può essere in un'altra lingua) dal resto della frase. */}
             {prossimo ? (
               <span>
                 {t.home.doveAndiamo("")}
-                <bdi {...c}>{prossimo.destinazione}</bdi>
+                <bdi {...attributiContenuto(lingua, prossimo.linguaTesti)}>{prossimo.destinazione}</bdi>
               </span>
             ) : (
               t.home.scopri
@@ -86,7 +88,7 @@ export default async function Home({ params }: Props) {
                 {altri.map((v) => (
                   <li key={v.id}>
                     <Link href={percorso(lingua, `/viaggi/${v.slug}`)}>
-                      <strong {...c}>{v.titolo}</strong>
+                      <strong {...attributiContenuto(lingua, v.linguaTesti)}>{v.titolo}</strong>
                       <span>
                         {dataBreve(lingua, v.partenze[0]!.dataInizio, true)} {avanti}
                       </span>
@@ -176,9 +178,9 @@ export default async function Home({ params }: Props) {
 }
 
 /** La scheda grande del viaggio prenotabile: foto, date, prezzo, posti e il pulsante per prenotare. */
-function ProssimoViaggio({ viaggio: v, lingua }: { viaggio: ViaggioPubblico; lingua: Lingua }) {
+function ProssimoViaggio({ viaggio: v, lingua }: { viaggio: ViaggioPubblico & { linguaTesti: Lingua }; lingua: Lingua }) {
   const t = dizionario(lingua).viaggio;
-  const c = attributiContenuto(lingua);
+  const c = attributiContenuto(lingua, v.linguaTesti);
   const p = v.partenze[0]!;
   const completo = p.postiLiberi <= 0;
   const altreDate = v.partenze.length - 1;
@@ -244,14 +246,14 @@ function InPreparazione({ lingua }: { lingua: Lingua }) {
 }
 
 /** Una tessera della sezione "Viaggi passati": foto (o colore), titolo e quando. */
-function TesseraPassato({ viaggio: v, lingua }: { viaggio: ViaggioPassato; lingua: Lingua }) {
+function TesseraPassato({ viaggio: v, lingua }: { viaggio: ViaggioPassato & { linguaTesti: Lingua }; lingua: Lingua }) {
   return (
     <li className="passato">
       <div className="copertina">
         <Copertina viaggio={v} lingua={lingua} />
       </div>
       <div className="passato-testo">
-        <strong {...attributiContenuto(lingua)}>{v.titolo}</strong>
+        <strong {...attributiContenuto(lingua, v.linguaTesti)}>{v.titolo}</strong>
         <span>
           {nomeMese(lingua, v.dataInizio.slice(0, 7))} · {dizionario(lingua).viaggio.giorni(v.durataGiorni)}
         </span>

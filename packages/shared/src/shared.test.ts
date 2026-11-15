@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  appiattisci,
+  improntaOriginale,
+  testiDaTradurre,
   aggiungiGiorni,
   disponibilita,
   euroInCentesimi,
@@ -135,5 +138,40 @@ describe("spese e conti", () => {
     const r = spesaInputSchema.parse({ descrizione: "Dominio", categoria: "software", importoCentesimi: 1200, data: "2026-11-12", pagata: true });
     expect(r.partenzaId).toBeNull();
     expect(spesaInputSchema.safeParse({ ...r, categoria: "boh" }).success).toBe(false);
+  });
+});
+
+describe("traduzioni", () => {
+  const testi = testiDaTradurre({
+    titolo: "Marocco",
+    sottotitolo: "",
+    destinazione: "Marocco",
+    descrizione: "Deserto",
+    fasciaEta: "",
+    puntiForti: ["Dune"],
+    incluso: [],
+    nonIncluso: [],
+    infoUtili: "",
+    istruzioniPagamento: "",
+    tappe: [
+      { giorno: 2, titolo: "Merzouga", descrizione: "" },
+      { giorno: 1, titolo: "Marrakech", descrizione: "Arrivo" },
+    ],
+  });
+
+  it("appiattisce solo le frasi non vuote e le ricompone al posto giusto", () => {
+    const { frasi, ricomponi } = appiattisci(testi);
+    expect(frasi).toEqual(["Marocco", "Marocco", "Deserto", "Dune", "Marrakech", "Arrivo", "Merzouga"]);
+    const tradotto = ricomponi(frasi.map((f) => f.toUpperCase()));
+    expect(tradotto.tappe).toEqual([
+      { giorno: 1, titolo: "MARRAKECH", descrizione: "ARRIVO" },
+      { giorno: 2, titolo: "MERZOUGA", descrizione: "" },
+    ]);
+    expect(tradotto.sottotitolo).toBe("");
+  });
+
+  it("l'impronta cambia se cambia anche una sola parola", () => {
+    expect(improntaOriginale(testi)).toBe(improntaOriginale({ ...testi }));
+    expect(improntaOriginale(testi)).not.toBe(improntaOriginale({ ...testi, descrizione: "Deserto!" }));
   });
 });

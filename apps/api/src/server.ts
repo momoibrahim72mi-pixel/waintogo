@@ -1,6 +1,7 @@
 // Punto di ingresso dell'API: legge la configurazione, prepara il database e avvia il server.
 import { applicaMigrazioni, creaDb } from "@waintogo/db";
 import { creaApp } from "./app.js";
+import { traduttoreDaAmbiente } from "./traduzioni/traduttore.js";
 
 const url = process.env.DATABASE_URL;
 if (!url) {
@@ -15,7 +16,7 @@ const { db, chiudi } = creaDb(url);
 // di una, sposteremo questo passo in un Job di Kubernetes che gira prima del deploy.
 await applicaMigrazioni(db);
 
-const app = creaApp({ db, log: true });
+const app = creaApp({ db, log: true, traduttore: traduttoreDaAmbiente() });
 
 // In un container bisogna ascoltare su 0.0.0.0, non su localhost,
 // altrimenti le richieste che arrivano da fuori dal container non vengono accettate.

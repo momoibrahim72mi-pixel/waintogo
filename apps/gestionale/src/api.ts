@@ -11,6 +11,9 @@ import type {
   Spesa,
   SpesaInput,
   StatoIscrizione,
+  LinguaTraduzione,
+  TestiTradotti,
+  Traduzione,
   Viaggio,
   ViaggioInput,
 } from "@waintogo/shared";
@@ -57,6 +60,9 @@ export type DettaglioPartenza = Partenza & {
   costiCentesimi: number;
 };
 
+/** Le traduzioni di un viaggio e il nome del traduttore automatico (null se non configurato). */
+export type StatoTraduzioni = { automatica: string | null; traduzioni: Traduzione[] };
+
 export const api = {
   cruscotto: () => chiama<Cruscotto>("GET", "/cruscotto"),
 
@@ -67,6 +73,14 @@ export const api = {
   pubblica: (id: string) => chiama<Viaggio>("POST", `/viaggi/${id}/pubblica`),
   ritira: (id: string) => chiama<Viaggio>("POST", `/viaggi/${id}/ritira`),
   eliminaViaggio: (id: string) => chiama<void>("DELETE", `/viaggi/${id}`),
+
+  traduzioni: (id: string) => chiama<StatoTraduzioni>("GET", `/viaggi/${id}/traduzioni`),
+  salvaTraduzione: (id: string, lingua: LinguaTraduzione, testi: TestiTradotti) =>
+    chiama<StatoTraduzioni>("PUT", `/viaggi/${id}/traduzioni/${lingua}`, testi),
+  traduciAutomaticamente: (id: string, lingua: LinguaTraduzione) =>
+    chiama<StatoTraduzioni>("POST", `/viaggi/${id}/traduzioni/${lingua}/automatica`),
+  approvaTraduzione: (id: string, lingua: LinguaTraduzione) =>
+    chiama<StatoTraduzioni>("POST", `/viaggi/${id}/traduzioni/${lingua}/approva`),
 
   creaPartenza: (viaggioId: string, dati: PartenzaInput) =>
     chiama<DettaglioPartenza>("POST", `/viaggi/${viaggioId}/partenze`, dati),

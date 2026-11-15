@@ -5,7 +5,10 @@ import { attributiContenuto } from "../lib/contenuti";
 import { dizionario } from "../lib/dizionari";
 import type { Lingua } from "../lib/lingue";
 
-type Props = { viaggio: Pick<ViaggioPubblico, "immagineUrl" | "destinazione" | "stili">; lingua: Lingua };
+type Props = {
+  viaggio: Pick<ViaggioPubblico, "immagineUrl" | "destinazione" | "stili"> & { linguaTesti: Lingua };
+  lingua: Lingua;
+};
 
 export function Copertina({ viaggio, lingua }: Props) {
   if (viaggio.immagineUrl) {
@@ -17,7 +20,7 @@ export function Copertina({ viaggio, lingua }: Props) {
     <div
       className={`copertina-segnaposto c-${viaggio.stili[0] ?? "generico"}`}
       aria-hidden="true"
-      {...attributiContenuto(lingua)}
+      {...attributiContenuto(lingua, viaggio.linguaTesti)}
     >
       {viaggio.destinazione}
     </div>

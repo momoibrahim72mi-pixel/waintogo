@@ -4,6 +4,8 @@
 //   GET  /pubblico/viaggi          catalogo (viaggi con partenze future: il "prossimo viaggio")
 //   GET  /pubblico/viaggi-passati  i viaggi già fatti, dal più recente
 //   GET  /pubblico/viaggi/:slug    pagina del viaggio
+// Ogni viaggio porta con sé le traduzioni APPROVATE e aggiornate (campo "traduzioni"):
+// il sito sceglie quella della lingua della pagina, o l'italiano se manca.
 //   POST /pubblico/iscrizioni      richiesta di iscrizione → ricevuta con codice e istruzioni
 //
 // Il sito chiama queste rotte DAL SUO SERVER (non dal browser), dentro il cluster:
@@ -24,12 +26,15 @@ import type { FastifyInstance } from "fastify";
 import { conflitto, datiNonValidi, nonTrovato, type Oggi } from "../http.js";
 import * as iscrizioni from "../iscrizioni/archivio.js";
 import { conRifiuti } from "../partenze/rotte.js";
+import { traduzioniPubbliche } from "../traduzioni/archivio.js";
 import { elencoViaggi, inViaggio } from "../viaggi/archivio.js";
 
 export async function rottePubbliche(app: FastifyInstance, { db, oggi }: { db: Db; oggi: Oggi }) {
   app.get("/pubblico/viaggi", async () => {
-    const tutti = await elencoViaggi(db);
-    return tutti.filter((v) => v.stato === "pubblicato").map((v) => inPubblico(v, oggi()));
+    const pubblicati = (await elencoViaggi(db)).filter((v) => v.stato === "pubblicato");
+    // Le traduzioni approvate di tutti i viaggi, con una sola richiesta al database.
+    const traduzioni = await traduzioniPubbliche(db, pubblicati);
+    return pubblicati.map((v) => inPubblico(v, oggi(), traduzioni.get(v.id) ?? {}));
   });
 
   // I viaggi passati: quelli con almeno una partenza già iniziata e non annullata.
@@ -37,6 +42,7 @@ export async function rottePubbliche(app: FastifyInstance, { db, oggi }: { db: D
   // le bozze no. Se un viaggio è partito più volte conta l'ultima partenza.
   app.get("/pubblico/viaggi-passati", async () => {
     const tutti = await elencoViaggi(db);
+    const traduzioni = await traduzioniPubbliche(db, tutti);
     const passati: ViaggioPassato[] = [];
     for (const v of tutti) {
       if (v.stato === "bozza") continue;
@@ -53,6 +59,10 @@ export async function rottePubbliche(app: FastifyInstance, { db, oggi }: { db: D
         durataGiorni: v.durataGiorni,
         dataInizio: ultima.dataInizio,
         dataFine: ultima.dataFine,
+        // Per la tessera bastano titolo e destinazione.
+        traduzioni: Object.fromEntries(
+          Object.entries(traduzioni.get(v.id) ?? {}).map(([l, t]) => [l, { titolo: t.titolo, destinazione: t.destinazione }]),
+        ),
       });
     }
     return passati.sort((a, b) => b.dataInizio.localeCompare(a.dataInizio));
@@ -69,7 +79,8 @@ export async function rottePubbliche(app: FastifyInstance, { db, oggi }: { db: D
     if (!riga) return nonTrovato(reply, "Viaggio");
     const v = inViaggio(riga);
     v.tappe.sort((a, b) => a.giorno - b.giorno);
-    return inPubblico(v, oggi());
+    const traduzioni = await traduzioniPubbliche(db, [v]);
+    return inPubblico(v, oggi(), traduzioni.get(v.id) ?? {});
   });
 
   app.post("/pubblico/iscrizioni", async (req, reply) => {
@@ -104,7 +115,7 @@ export async function rottePubbliche(app: FastifyInstance, { db, oggi }: { db: D
 }
 
 /** Toglie i dati interni e tiene solo le partenze future e non annullate, dalla più vicina. */
-function inPubblico(v: Viaggio, oggi: string): ViaggioPubblico {
+function inPubblico(v: Viaggio, oggi: string, traduzioni: ViaggioPubblico["traduzioni"]): ViaggioPubblico {
   const { stato: _s, creatoIl: _c, aggiornatoIl: _a, partenze: tutte, ...resto } = v;
   const future = tutte
     .filter((p) => !p.annullata && p.dataInizio > oggi)
@@ -114,6 +125,7 @@ function inPubblico(v: Viaggio, oggi: string): ViaggioPubblico {
     ...resto,
     partenze: future,
     prezzoDaCentesimi: future.length > 0 ? Math.min(...future.map((p) => p.prezzoCentesimi)) : null,
+    traduzioni,
   };
 }
 

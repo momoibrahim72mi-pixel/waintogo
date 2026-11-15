@@ -10,7 +10,8 @@
 | 5 | Email automatiche: conferma della richiesta con i dati per bonifico/Revolut, conferma pagamento, promemoria del saldo | |
 | 6 | Conti nel gestionale: spese, saldo e margine per partenza (anticipata su richiesta di Mohamed) | ✅ PR #5 |
 | 3c | Sito ripensato per il telefono: una pagina sola sul prossimo viaggio, viaggi passati, cosa facciamo (parere di Mohamed) | ✅ PR #6 |
-| 3d | Sito in inglese e arabo (richiesta di Mohamed) | 🔄 questa PR |
+| 3d | Sito in inglese e arabo (richiesta di Mohamed) | ✅ PR #9 |
+| 3e | Traduzioni dei viaggi: le prepara Claude, le approva Mohamed nel gestionale | 🔄 questa PR |
 
 La lista completa delle idee per il gestionale, in ordine di utilità, è in [concept.md](concept.md).
 
@@ -81,7 +82,19 @@ Tutto spiegato in [lingue.md](lingue.md); decisioni D28, D29, D30.
 - **Arabo da destra a sinistra**: tutta l'impaginazione si rovescia (CSS con proprietà logiche), caratteri e interlinea adatti, plurali arabi corretti.
 - **Testi fissi** (menu, home, FAQ, pagina del viaggio, modulo, ricevuta, errori) in tre dizionari controllati da TypeScript.
 - **Date e prezzi** nel formato di ogni lingua; link `hreflang` per Google.
-- **Testi dei viaggi**: per ora restano in italiano con un avviso (D30). La traduzione nel gestionale è la prossima PR, se Mohamed la conferma.
+- **Testi dei viaggi**: per ora restano in italiano con un avviso (D30). Completato nella tappa 3e.
 - **Da fare**: rilettura dei testi arabi da una persona di madrelingua.
+
+## Tappa 3e (traduzioni dei viaggi) – cosa è stato fatto
+
+Decisione D31; come si usa in [lingue.md](lingue.md).
+
+- Nuova tabella **`traduzioni_viaggi`** (migrazione `0003_traduzioni.sql`): testi tradotti in jsonb, stato, impronta dell'italiano.
+- **API**: quattro rotte `/viaggi/:id/traduzioni...` (leggi, salva bozza, traduci in automatico, approva). Il sito riceve solo le traduzioni approvate e aggiornate.
+- **Gestionale**: sezione "Traduzioni per il sito" nella scheda del viaggio, con "Copia il testo per la traduzione", "Incolla la traduzione", il confronto italiano/traduzione campo per campo e "Approva e pubblica sul sito".
+- **Sito**: titoli, descrizioni, itinerari, tessere dei viaggi passati e ricevuta nella lingua della pagina quando la traduzione è approvata; altrimenti l'italiano con l'avviso.
+- **Traduttore automatico** facoltativo (DeepL o LibreTranslate), spento finché non si mette una chiave.
+- **Test**: 7 nuovi sulle API (bozza, approvazione, giorni diversi, traduzione automatica, "superata", cosa vede il sito) e 2 sulle regole condivise.
+- **Prova completa** nel browser: Marocco copiato, tradotto da Claude, incollato e approvato; il sito in arabo e in inglese mostra il viaggio tradotto.
 
 > ⚠️ Il gestionale **non ha ancora il login** (arriva nella tappa 4): non va messo online prima di allora.
